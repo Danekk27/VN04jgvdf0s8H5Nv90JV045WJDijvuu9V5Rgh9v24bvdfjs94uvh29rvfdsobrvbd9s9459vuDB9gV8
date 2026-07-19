@@ -107,6 +107,7 @@ html,body{
   display:flex;align-items:center;gap:10px;
   padding:0 18px 12px;
   flex-shrink:0;
+  position:relative;z-index:2;
 }
 .sliders-btn{
   width:42px;height:42px;
@@ -513,12 +514,12 @@ html,body{
     </div>
   </div>
 
-  <div class="reel-wrap" style="position:relative;display:flex;padding:0 22px;align-items:stretch;">
+  <div class="reel-wrap" style="position:relative;display:flex;padding:0 22px;align-items:flex-start;">
     <div class="hero-bg" style="position:absolute;right:-20px;top:-360px;z-index:0;height:600px;width:55%">
       <div class="hero-glow"></div>
-      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue','Righteous',sans-serif;font-size:120px;font-weight:900;color:rgba(255,255,255,0.10);letter-spacing:6px;user-select:none;transform:rotate(-90deg) translateY(8px);">STANDART</div>
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue','Righteous',sans-serif;font-size:136px;font-weight:900;color:rgba(255,255,255,0.10);letter-spacing:6px;user-select:none;transform:rotate(-90deg) translateY(8px);">STANDART</div>
     </div>
-    <div class="pcard" onclick="go()" style="flex:0 0 68%;background:linear-gradient(to bottom,#283140,#1b1d2a);border-radius:28px;border:1px solid rgba(255,255,255,0.08);display:flex;flex-direction:column;position:relative;z-index:1;">
+    <div class="pcard" onclick="go()" style="flex:0 0 auto;width:240px;height:370px;align-self:flex-start;margin-top:30px;background:linear-gradient(to bottom,#283140,#1b1d2a);border-radius:28px;border:1px solid rgba(255,255,255,0.08);display:flex;flex-direction:column;position:relative;z-index:1;">
       <div class="pcard-img"></div>
       <div class="pcard-foot">
         <h3>Dual Sense</h3>
