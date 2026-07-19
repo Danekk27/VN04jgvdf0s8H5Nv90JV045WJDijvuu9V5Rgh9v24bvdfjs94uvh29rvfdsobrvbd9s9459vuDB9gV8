@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Gaming Store</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+
+:root{
+  --bg:#202835;
+  --surf:linear-gradient(to bottom,#2a3342,#18202a);
+  --surf2:#22243c;
+  --blue:#5078ff;
+  --blue2:#2a52e8;
+  --blue3:#1438b8;
+  --grad:linear-gradient(to left,#41bbf2,#4745e8);
+  --card-blue:linear-gradient(158deg,#4e82ff 0%,#2550e5 46%,#1435b5 100%);
+  --card-dark:linear-gradient(158deg,#3a2f6a 0%,#241d52 46%,#18143e 100%);
+  --header-grad:linear-gradient(148deg,#60aaff 0%,#4272f0 32%,#2452e5 62%,#1438c8 100%);
+  --t:#fff;
+  --tm:#8898b5;
+  --td:#404870;
+  --br:rgba(255,255,255,0.07);
+}
+
+html,body{
+  width:100%;height:100%;
+  background:#0b0c18;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+}
+
+/* ─── APP SHELL ─── */
+.app{
+  position:relative;
+  width:100%;max-width:390px;
+  height:100%;max-height:844px;
+  background:linear-gradient(to bottom,#202835,#15181f);
+  overflow:hidden;
+  border-radius:44px;
+  box-shadow:0 40px 100px rgba(0,0,0,0.9);
+}
+@media(max-width:430px){
+  .app{border-radius:0;max-height:100vh}
+}
+
+/* ─── SCREENS ─── */
+.screen{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;
+  transition:transform .36s cubic-bezier(.4,0,.2,1);
+  will-change:transform;
+}
+#home{transform:translateX(0)}
+#detail{transform:translateX(100%)}
+#home.away{transform:translateX(-100%)}
+#detail.open{transform:translateX(0)}
+
+/* ════════════════════════════════
+   HOME
+════════════════════════════════ */
+#home{background:linear-gradient(to bottom,#202835,#15181f)}
+
+/* topbar */
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:20px 22px 10px;
+  flex-shrink:0;
+}
+.ic-btn{
+  width:44px;height:44px;
+  background:var(--surf);
+  border:1px solid var(--br);
+  border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  position:relative;
+}
+.ic-btn svg{
+  width:20px;height:20px;
+  stroke:var(--t);fill:none;
+  stroke-width:1.85;stroke-linecap:round;stroke-linejoin:round;
+}
+.badge{
+  position:absolute;top:-5px;right:-5px;
+  width:18px;height:18px;
+  background:var(--blue);
+  border:2.5px solid var(--bg);
+  border-radius:50%;
+  font-size:9px;font-weight:800;color:#fff;
+  display:flex;align-items:center;justify-content:center;
+}
+
+/* heading */
+.heading{
+  padding:6px 22px 18px;
+  flex-shrink:0;
+}
+.heading .r1{
+  font-size:38px;font-weight:800;
+  color:var(--t);line-height:1.08;letter-spacing:-1.2px;
+}
+.heading .r2{
+  font-size:38px;font-weight:300;font-style:italic;
+  color:var(--t);line-height:1.08;letter-spacing:-1.2px;
+}
+
+/* category row */
+.cat-row{
+  display:flex;align-items:center;gap:10px;
+  padding:0 22px 18px;
+  flex-shrink:0;
+}
+.sliders-btn{
+  width:42px;height:42px;
+  background:var(--surf);
+  border:1px solid var(--br);
+  border-radius:13px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;cursor:pointer;
+}
+.sliders-btn svg{width:19px;height:19px;stroke:var(--tm);fill:none;stroke-width:1.8;stroke-linecap:round}
+.cats{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none}
+.cats::-webkit-scrollbar{display:none}
+.cat{
+  width:54px;height:54px;
+  background:var(--surf);
+  border:1px solid var(--br);
+  border-radius:17px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;cursor:pointer;
+  transition:all .2s;
+}
+.cat.on{
+  background:linear-gradient(to bottom,#41bbf2,#4745e8);
+  border-color:transparent;
+  box-shadow:0 4px 20px rgba(82,120,248,.5);
+}
+.cat svg{width:24px;height:24px;stroke:var(--td);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;transition:stroke .2s}
+.cat.on svg{stroke:rgba(255,255,255,.9)}
+
+/* carousel */
+.reel-wrap{
+  flex:1;min-height:0;
+  padding:0 22px;
+  overflow:visible;
+}
+.reel{
+  display:flex;
+  height:100%;
+  overflow:visible;
+  padding-bottom:4px;
+}
+
+/* product card */
+.pcard{
+  flex:0 0 72%;
+  scroll-snap-align:start;
+  border-radius:28px;
+  display:flex;flex-direction:column;
+  overflow:hidden;
+  cursor:pointer;
+  border:1px solid rgba(255,255,255,.09);
+  transition:transform .15s;
+  position:relative;
+}
+.pcard:active{transform:scale(.97)}
+.pcard.blue{background:var(--card-blue)}
+.pcard.dark{background:var(--card-dark)}
+
+.pcard-img{
+  flex:1;min-height:0;
+  display:flex;align-items:center;justify-content:center;
+  padding:22px 14px 10px;
+  position:relative;
+  overflow:hidden;
+}
+.pcard-img::before{
+  content:'';
+  position:absolute;inset:0;
+  background:radial-gradient(ellipse at 50% 38%,rgba(255,255,255,.13) 0%,transparent 68%);
+  pointer-events:none;
+}
+
+.pcard-foot{
+  padding:12px 20px 20px;
+  background:linear-gradient(to top,rgba(0,0,0,.6) 0%,transparent 100%);
+  flex-shrink:0;
+}
+.pcard-foot h3{
+  font-size:20px;font-weight:700;
+  color:#fff;margin-bottom:4px;
+}
+.pcard-foot p{font-size:12.5px;color:rgba(255,255,255,.5)}
+.pcard-foot p b{font-weight:600;color:rgba(255,255,255,.78)}
+
+/* hero bg block */
+.hero-bg{
+  width:100%;height:100%;
+  border-radius:28px;
+  background:linear-gradient(to bottom,#38b0ed 0%,#4946f9 100%);
+  position:relative;
+  overflow:hidden;
+}
+.hero-glow{
+  position:absolute;
+  width:260px;height:260px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(255,255,255,.18) 0%,transparent 70%);
+  top:-60px;right:-60px;
+  pointer-events:none;
+}
+.hero-ring{
+  position:absolute;
+  border-radius:50%;
+  border:1px solid rgba(255,255,255,.12);
+  pointer-events:none;
+}
+.hero-ring1{width:320px;height:320px;bottom:-120px;right:-100px;}
+.hero-ring2{width:200px;height:200px;bottom:-60px;right:-30px;border-color:rgba(255,255,255,.07);}
+
+/* bottom nav */
+.bnav{
+  flex-shrink:0;
+  background:var(--surf);
+  border-top:1px solid var(--br);
+  display:flex;align-items:center;justify-content:space-around;
+  padding:14px 18px 30px;
+}
+.nbtn{
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;padding:10px;border-radius:14px;
+  transition:all .2s;
+}
+.nbtn svg{
+  width:24px;height:24px;
+  stroke:var(--td);fill:none;
+  stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;
+}
+.nbtn.on{
+  background:var(--grad);
+  padding:11px 26px;gap:8px;
+  box-shadow:0 4px 22px rgba(82,120,248,.55);
+}
+.nbtn.on svg{stroke:#fff}
+.nbtn.on .nlabel{font-size:15px;font-weight:700;color:#fff}
+
+/* ════════════════════════════════
+   DETAIL
+════════════════════════════════ */
+#detail{background:linear-gradient(to bottom,#202835,#15181f)}
+
+.dheader{
+  flex-shrink:0;
+  height:240px;
+  background:var(--header-grad);
+  border-radius:0 0 36px 36px;
+  position:relative;overflow:hidden;
+  display:flex;flex-direction:column;
+  padding:20px 22px 0;
+}
+/* decorative ring */
+.dheader::before{
+  content:'';
+  position:absolute;
+  width:300px;height:300px;border-radius:50%;
+  border:1px solid rgba(255,255,255,.1);
+  top:-110px;right:-70px;pointer-events:none;
+}
+.dheader::after{
+  content:'';
+  position:absolute;
+  width:190px;height:190px;border-radius:50%;
+  border:1px solid rgba(255,255,255,.07);
+  top:-20px;right:30px;pointer-events:none;
+}
+
+.dtopbar{
+  display:flex;align-items:center;justify-content:space-between;
+  position:relative;z-index:2;flex-shrink:0;
+}
+.back{
+  width:38px;height:38px;
+  background:rgba(255,255,255,.15);
+  border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  backdrop-filter:blur(8px);
+}
+.back svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round}
+.dcart{
+  width:38px;height:38px;
+  background:rgba(255,255,255,.15);
+  border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;position:relative;
+  backdrop-filter:blur(8px);
+}
+.dcart svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.dcart .badge{background:#fff;color:var(--blue2);border-color:transparent;font-size:8px}
+
+/* specs + controller in header */
+.dcontent{
+  flex:1;min-height:0;
+  display:flex;align-items:flex-end;
+  position:relative;z-index:2;
+}
+.dspecs{
+  flex:1;
+  padding-bottom:26px;
+  display:flex;flex-direction:column;gap:14px;
+}
+.spc-lbl{
+  font-size:10px;font-weight:700;
+  letter-spacing:2px;text-transform:uppercase;
+  color:rgba(255,255,255,.45);
+  margin-bottom:2px;
+}
+.spc-val{
+  font-size:15px;font-weight:600;
+  color:rgba(255,255,255,.95);
+}
+
+/* detail scroll */
+.dscroll{
+  flex:1;overflow-y:auto;scrollbar-width:none;
+  padding:0 22px 14px;
+}
+.dscroll::-webkit-scrollbar{display:none}
+
+.dtitle-row{
+  display:flex;align-items:flex-start;justify-content:space-between;
+  margin:20px 0 11px;
+}
+.dtitle{
+  font-size:31px;font-weight:800;
+  color:var(--t);letter-spacing:-.5px;
+}
+.bkmark{
+  width:40px;height:40px;
+  background:var(--surf);
+  border:1px solid var(--br);
+  border-radius:13px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;flex-shrink:0;margin-top:4px;
+}
+.bkmark svg{width:18px;height:18px;stroke:var(--tm);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+.ddesc{
+  font-size:13.5px;color:var(--tm);
+  line-height:1.72;margin-bottom:20px;
+}
+
+/* features 2x2 */
+.feats{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:10px;margin-bottom:12px;
+}
+.feat{
+  background:var(--surf);
+  border:1px solid var(--br);
+  border-radius:16px;
+  padding:14px 14px;
+  display:flex;align-items:center;gap:12px;
+}
+.ficon{
+  width:38px;height:38px;
+  border-radius:11px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.ficon svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:1.85;stroke-linecap:round;stroke-linejoin:round}
+.fi1{background:linear-gradient(135deg,#7c5bf8,#5038d0)}
+.fi2{background:linear-gradient(135deg,#3b74f0,#1a4ad0)}
+.fi3{background:linear-gradient(135deg,#e040a0,#b01870)}
+.fi4{background:linear-gradient(135deg,#f59030,#e06010)}
+.fn{font-size:13px;font-weight:700;color:var(--t);line-height:1.2}
+.fs{font-size:11px;color:var(--tm);margin-top:2px}
+
+/* buy bar */
+.buybar{
+  flex-shrink:0;
+  background:var(--surf);
+  border-top:1px solid var(--br);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 22px 30px;
+}
+.pricebox{display:flex;align-items:baseline;gap:1px}
+.psym{font-size:18px;font-weight:700;color:var(--t);margin-bottom:3px}
+.pnum{font-size:40px;font-weight:800;color:var(--t);letter-spacing:-1.5px;line-height:1}
+.preorder{
+  height:54px;min-width:155px;
+  background:var(--grad);
+  border-radius:18px;
+  display:flex;align-items:center;justify-content:center;
+  gap:10px;cursor:pointer;
+  font-size:16px;font-weight:700;color:#fff;
+  box-shadow:0 6px 26px rgba(82,120,248,.55);
+  transition:transform .15s;
+  padding:0 20px;
+}
+.preorder:active{transform:scale(.96)}
+.preorder svg{width:20px;height:20px;stroke:#fff;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+</style>
+</head>
+<body>
+
+<!-- shared SVG defs (filters etc) -->
+<svg style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">
+  <defs>
+    <filter id="sh" x="-25%" y="-25%" width="150%" height="150%">
+      <feDropShadow dx="0" dy="9" stdDeviation="13" flood-color="rgba(0,0,0,.82)"/>
+    </filter>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="5" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <radialGradient id="bG" cx="50%" cy="32%" r="65%">
+      <stop offset="0%" stop-color="#22263e"/>
+      <stop offset="100%" stop-color="#0d0f1e"/>
+    </radialGradient>
+    <radialGradient id="stG" cx="38%" cy="34%" r="58%">
+      <stop offset="0%" stop-color="#292d46"/>
+      <stop offset="100%" stop-color="#0c0e1c"/>
+    </radialGradient>
+    <radialGradient id="dkG" cx="50%" cy="32%" r="65%">
+      <stop offset="0%" stop-color="#1e1c36"/>
+      <stop offset="100%" stop-color="#0b0a1a"/>
+    </radialGradient>
+  </defs>
+</svg>
+
+<div class="app">
+
+<!-- ══════════ HOME ══════════ -->
+<div class="screen" id="home">
+
+  <div class="topbar">
+    <div class="ic-btn">
+      <svg viewBox="0 0 24 24">
+        <line x1="3" y1="7" x2="21" y2="7"/>
+        <line x1="3" y1="12" x2="16" y2="12"/>
+        <line x1="3" y1="17" x2="21" y2="17"/>
+      </svg>
+    </div>
+    <div class="ic-btn">
+      <svg viewBox="0 0 24 24">
+        <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+        <line x1="3" y1="6" x2="21" y2="6"/>
+        <path d="M16 10a4 4 0 01-8 0"/>
+      </svg>
+      <div class="badge">2</div>
+    </div>
+  </div>
+
+  <div class="heading">
+    <div class="r1">Featured</div>
+    <div class="r2">Products</div>
+  </div>
+
+  <div class="cat-row">
+    <div class="sliders-btn">
+      <!-- sliders / filter icon -->
+      <svg viewBox="0 0 24 24">
+        <line x1="4" y1="6" x2="20" y2="6"/>
+        <circle cx="16" cy="6" r="2.2" fill="#404870" stroke="none"/>
+        <line x1="4" y1="12" x2="20" y2="12"/>
+        <circle cx="8" cy="12" r="2.2" fill="#404870" stroke="none"/>
+        <line x1="4" y1="18" x2="20" y2="18"/>
+        <circle cx="14" cy="18" r="2.2" fill="#404870" stroke="none"/>
+      </svg>
+    </div>
+    <div class="cats">
+      <!-- gamepad -->
+      <div class="cat on" onclick="selCat(this)">
+        <svg viewBox="0 0 24 24">
+          <rect x="2" y="7" width="20" height="11" rx="4" fill="rgba(255,255,255,.08)"/>
+          <line x1="7" y1="10.5" x2="7" y2="14.5"/>
+          <line x1="5" y1="12.5" x2="9" y2="12.5"/>
+          <circle cx="15.5" cy="11" r="1.1" fill="#fff" stroke="none"/>
+          <circle cx="17.8" cy="13" r="1.1" fill="#fff" stroke="none"/>
+        </svg>
+      </div>
+      <!-- switch-like -->
+      <div class="cat" onclick="selCat(this)">
+        <svg viewBox="0 0 24 24">
+          <rect x="2" y="4" width="5.5" height="16" rx="2.5"/>
+          <rect x="16.5" y="4" width="5.5" height="16" rx="2.5"/>
+          <rect x="7.5" y="7" width="9" height="10" rx="1.5"/>
+          <circle cx="4.75" cy="8" r="1.3" fill="rgba(255,255,255,.35)" stroke="none"/>
+        </svg>
+      </div>
+      <!-- mouse -->
+      <div class="cat" onclick="selCat(this)">
+        <svg viewBox="0 0 24 24">
+          <rect x="6" y="3" width="12" height="18" rx="6"/>
+          <line x1="12" y1="3" x2="12" y2="10"/>
+          <circle cx="12" cy="14.5" r="1.4" fill="rgba(255,255,255,.35)" stroke="none"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="reel-wrap">
+    <div class="hero-bg" style="margin-left:58%;margin-top:-360px;z-index:-1;position:relative;height:780px">
+      <div class="hero-glow"></div>
+    </div>
+  </div>
+
+  <div class="bnav">
+    <div class="nbtn on">
+      <svg viewBox="0 0 24 24">
+        <path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z" fill="rgba(255,255,255,.15)"/>
+        <path d="M9 21V12h6v9"/>
+      </svg>
+      <div class="nlabel">Home</div>
+    </div>
+    <div class="nbtn">
+      <svg viewBox="0 0 24 24">
+        <circle cx="12" cy="8" r="4"/>
+        <path d="M4 20c0-4 3.58-7 8-7s8 3 8 7"/>
+      </svg>
+    </div>
+    <div class="nbtn">
+      <svg viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14" stroke-dasharray="3 2"/>
+        <path d="M12 1v2M12 21v2"/>
+      </svg>
+    </div>
+    <div class="nbtn">
+      <svg viewBox="0 0 24 24">
+        <path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/>
+      </svg>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════ DETAIL ══════════ -->
+<div class="screen" id="detail">
+
+  <div class="dheader">
+    <div class="dtopbar">
+      <div class="back" onclick="back()">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      </div>
+      <div class="dcart">
+        <svg viewBox="0 0 24 24">
+          <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <path d="M16 10a4 4 0 01-8 0"/>
+        </svg>
+        <div class="badge">2</div>
+      </div>
+    </div>
+
+    <div class="dcontent">
+      <div class="dspecs">
+        <div>
+          <div class="spc-lbl">Platform</div>
+          <div class="spc-val">PS5</div>
+        </div>
+        <div>
+          <div class="spc-lbl">Release</div>
+          <div class="spc-val">Fall 2020</div>
+        </div>
+        <div>
+          <div class="spc-lbl">Price</div>
+          <div class="spc-val">$50</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="dscroll">
+    <div class="dtitle-row">
+      <div class="dtitle">Dual Sense</div>
+      <div class="bkmark">
+        <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
+      </div>
+    </div>
+    <p class="ddesc">DualSense also adds a built-in microphone array, which will enable players to easily chat with friends without a headset...</p>
+
+    <div class="feats">
+      <div class="feat">
+        <div class="ficon fi1">
+          <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        </div>
+        <div><div class="fn">Futuristic</div><div class="fs">Design</div></div>
+      </div>
+      <div class="feat">
+        <div class="ficon fi2">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 1a3 3 0 013 3v8a3 3 0 01-6 0V4a3 3 0 013-3z"/>
+            <path d="M19 10v2a7 7 0 01-14 0v-2"/>
+            <line x1="12" y1="19" x2="12" y2="23"/>
+            <line x1="8" y1="23" x2="16" y2="23"/>
+          </svg>
+        </div>
+        <div><div class="fn">Built-in</div><div class="fs">Microphone</div></div>
+      </div>
+      <div class="feat">
+        <div class="ficon fi3">
+          <svg viewBox="0 0 24 24">
+            <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
+          </svg>
+        </div>
+        <div><div class="fn">Haptic</div><div class="fs">Feedback</div></div>
+      </div>
+      <div class="feat">
+        <div class="ficon fi4">
+          <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        </div>
+        <div><div class="fn">Fast charge</div><div class="fs">USB-C port</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="buybar">
+    <div class="pricebox">
+      <div class="psym">$</div>
+      <div class="pnum">50</div>
+    </div>
+    <div class="preorder">
+      <span>Preorder</span>
+      <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+    </div>
+  </div>
+</div>
+
+</div><!-- /app -->
+
+<script>
+function selCat(el){
+  document.querySelectorAll('.cat').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+}
+function go(){
+  document.getElementById('home').classList.add('away');
+  document.getElementById('detail').classList.add('open');
+  document.getElementById('detail').querySelector('.dscroll').scrollTop=0;
+}
+function back(){
+  document.getElementById('detail').classList.remove('open');
+  document.getElementById('home').classList.remove('away');
+}
+</script>
+</body>
+</html>
