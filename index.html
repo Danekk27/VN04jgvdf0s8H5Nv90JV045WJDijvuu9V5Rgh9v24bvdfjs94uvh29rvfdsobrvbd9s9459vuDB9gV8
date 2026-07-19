@@ -503,27 +503,51 @@ html,body{
     </div>
   </div>
 
-  <div class="reel-wrap" style="position:relative;display:flex;padding:10px 22px;align-items:stretch;">
+  <div class="reel-wrap" style="position:relative;display:flex;flex-direction:column;padding:10px 0 0;">
     <div class="hero-bg" style="position:absolute;right:-20px;top:-360px;z-index:-1;height:600px;width:55%">
       <div class="hero-glow"></div>
       <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue','Righteous',sans-serif;font-size:160px;font-weight:900;color:rgba(255,255,255,0.10);letter-spacing:6px;user-select:none;transform:rotate(-90deg) translateY(40px);">STANDART</div>
     </div>
-    <div class="pcard" onclick="go()" style="flex:0 0 auto;width:200px;height:calc(100% - 20px);max-height:280px;align-self:center;margin-top:0;background:linear-gradient(to bottom,#283140,#1b1d2a);border-radius:28px;border:1px solid rgba(255,255,255,0.08);display:flex;flex-direction:column;position:relative;z-index:1;overflow:visible;">
-      <div style="flex:1;display:flex;align-items:center;justify-content:center;position:relative;padding:14px 10px 70px;">
-        <!-- circles layer -->
-        <div style="position:absolute;inset:0;overflow:hidden;border-radius:28px;background:radial-gradient(ellipse at 50% 45%,rgba(65,187,242,0.15) 0%,rgba(71,69,232,0.10) 50%,transparent 80%);pointer-events:none;">
-          <div style="position:absolute;width:140px;height:140px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.09);top:-50px;right:-40px;"></div>
-          <div style="position:absolute;width:90px;height:90px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.07);top:-10px;right:10px;"></div>
-          <div style="position:absolute;width:100px;height:100px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.06);bottom:-30px;left:-30px;"></div>
-          <div style="position:absolute;width:55px;height:55px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.05);bottom:10px;left:20px;"></div>
+    <!-- scrollable cards row -->
+    <div id="cards-row" style="display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:0 22px 10px;flex:1;align-items:center;" onscroll="updateDots(this)">
+      <!-- card 1 -->
+      <div class="pcard" onclick="go()" style="flex:0 0 auto;width:200px;height:calc(100% - 20px);max-height:280px;align-self:center;scroll-snap-align:start;background:linear-gradient(to bottom,#283140,#1b1d2a);border-radius:28px;border:1px solid rgba(255,255,255,0.08);display:flex;flex-direction:column;position:relative;z-index:1;overflow:visible;">
+        <div style="flex:1;display:flex;align-items:center;justify-content:center;position:relative;padding:14px 10px 70px;">
+          <div style="position:absolute;inset:0;overflow:hidden;border-radius:28px;background:radial-gradient(ellipse at 50% 45%,rgba(65,187,242,0.15) 0%,rgba(71,69,232,0.10) 50%,transparent 80%);pointer-events:none;">
+            <div style="position:absolute;width:140px;height:140px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.09);top:-50px;right:-40px;"></div>
+            <div style="position:absolute;width:90px;height:90px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.07);top:-10px;right:10px;"></div>
+            <div style="position:absolute;width:100px;height:100px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.06);bottom:-30px;left:-30px;"></div>
+            <div style="position:absolute;width:55px;height:55px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.05);bottom:10px;left:20px;"></div>
+          </div>
+          <img src="https://i.postimg.cc/R0GG5kKC/blobid4.png" style="width:100%;height:auto;max-height:98px;object-fit:contain;position:relative;z-index:1;filter:drop-shadow(0 10px 22px rgba(0,0,0,0.9));"/>
         </div>
-        <img src="https://i.postimg.cc/R0GG5kKC/blobid4.png" style="width:100%;height:auto;max-height:98px;object-fit:contain;position:relative;z-index:1;filter:drop-shadow(0 10px 22px rgba(0,0,0,0.9));"/>
+        <div class="pcard-foot" style="position:absolute;bottom:0;left:0;right:0;">
+          <h3>DualSense</h3>
+          <p><b>Official PS5</b> controller</p>
+        </div>
       </div>
-      <!-- footer absolutely positioned so it doesn't cut shadow -->
-      <div class="pcard-foot" style="position:absolute;bottom:0;left:0;right:0;">
-        <h3>DualSense</h3>
-        <p><b>Official PS5</b> controller</p>
+      <!-- card 2 -->
+      <div class="pcard" style="flex:0 0 auto;width:200px;height:calc(100% - 20px);max-height:280px;align-self:center;scroll-snap-align:start;background:rgba(255,255,255,0.07);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-radius:28px;border:1px solid rgba(255,255,255,0.18);display:flex;flex-direction:column;position:relative;z-index:1;overflow:visible;box-shadow:inset 0 1px 0 rgba(255,255,255,0.15),0 8px 32px rgba(0,0,0,0.3);">
+        <div style="flex:1;display:flex;align-items:center;justify-content:center;position:relative;padding:14px 10px 70px;">
+          <div style="position:absolute;inset:0;overflow:hidden;border-radius:28px;background:radial-gradient(ellipse at 50% 45%,rgba(255,255,255,0.08) 0%,transparent 70%);pointer-events:none;">
+            <div style="position:absolute;width:140px;height:140px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.09);top:-50px;right:-40px;"></div>
+            <div style="position:absolute;width:90px;height:90px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.07);top:-10px;right:10px;"></div>
+            <div style="position:absolute;width:100px;height:100px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.06);bottom:-30px;left:-30px;"></div>
+            <div style="position:absolute;width:55px;height:55px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.05);bottom:10px;left:20px;"></div>
+          </div>
+          <div style="position:absolute;width:110px;height:110px;border-radius:50%;background:rgba(0,0,0,0.6);filter:blur(22px);z-index:0;pointer-events:none;"></div>
+          <img src="https://i.postimg.cc/hjTYFyDX/4c4d42ce-e81b-4261-9881-78a754f00f4f.png" style="width:auto;height:185px;max-width:100%;object-fit:contain;position:relative;z-index:1;filter:drop-shadow(0 10px 22px rgba(0,0,0,0.9));transform:scale(1.18);transform-origin:center center;"/>
+        </div>
+        <div class="pcard-foot" style="position:absolute;bottom:0;left:0;right:0;">
+          <h3>DualSense</h3>
+          <p><b>Edge PS5</b> controller</p>
+        </div>
       </div>
+    </div>
+    <!-- scroll indicator -->
+    <div style="display:flex;justify-content:center;align-items:center;gap:6px;padding:4px 0 10px;">
+      <div id="dot0" style="width:22px;height:4px;border-radius:2px;background:rgba(255,255,255,0.9);transition:all .3s;"></div>
+      <div id="dot1" style="width:6px;height:4px;border-radius:2px;background:rgba(255,255,255,0.3);transition:all .3s;"></div>
     </div>
   </div>
 
@@ -654,6 +678,13 @@ html,body{
 </div><!-- /app -->
 
 <script>
+function updateDots(el){
+  const idx=Math.round(el.scrollLeft/(el.scrollWidth/2));
+  document.getElementById('dot0').style.width=idx===0?'22px':'6px';
+  document.getElementById('dot0').style.background=idx===0?'rgba(255,255,255,0.9)':'rgba(255,255,255,0.3)';
+  document.getElementById('dot1').style.width=idx===1?'22px':'6px';
+  document.getElementById('dot1').style.background=idx===1?'rgba(255,255,255,0.9)':'rgba(255,255,255,0.3)';
+}
 function selCat(el){
   document.querySelectorAll('.cat').forEach(c=>c.classList.remove('on'));
   el.classList.add('on');
