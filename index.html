@@ -1,252 +1,649 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>AI Chat</title>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
-<style>
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{width:100%;height:100%;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Helvetica Neue',sans-serif;overflow:hidden;-webkit-font-smoothing:antialiased;}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Wallet</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        * {
+            margin: 0; padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-/* ── BG ── */
-.bg{position:fixed;inset:0;z-index:0;background:#141414;}
-.bokeh{position:absolute;border-radius:50%;pointer-events:none;z-index:1;}
-.bg-text{position:absolute;bottom:18%;left:50%;transform:translateX(-50%);font-size:110px;letter-spacing:.22em;color:transparent;-webkit-text-stroke:1px rgba(255,255,255,0.055);pointer-events:none;user-select:none;white-space:nowrap;font-family:'Bebas Neue',sans-serif;}
-.bk1{width:500px;height:500px;background:radial-gradient(circle,rgba(141,170,246,1) 0%,rgba(100,140,230,0.8) 30%,rgba(50,90,190,0.35) 60%,transparent 72%);filter:blur(70px);left:-170px;top:-175px;}
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+            background: #252836;
+            color: #fff;
+            height: 100dvh;
+            height: 100vh;
+            overflow: hidden;
+        }
 
-/* ── APP ── */
-.app{position:relative;z-index:2;display:flex;flex-direction:column;height:100svh;height:100vh;overflow:hidden;}
+        .screen {
+            display: none;
+            height: 100dvh;
+            height: 100vh;
+            flex-direction: column;
+        }
+        .screen.active { display: flex; }
 
-/* ── HEADER ── */
-.header{display:flex;align-items:center;justify-content:space-between;padding:18px 24px 14px;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,0.06);}
-.logo{display:flex;align-items:center;gap:8px;}
-.logo-text{font-size:18px;font-weight:600;color:#fff;letter-spacing:.02em;}
-.header-right{display:flex;align-items:center;gap:10px;}
-.hbtn{width:32px;height:32px;border-radius:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;cursor:pointer;color:rgba(200,215,245,0.4);transition:all .2s;}
-.hbtn:active{background:rgba(255,255,255,0.1);color:rgba(200,215,245,0.8)}
-.hbtn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+        /* ─── BOTTOM NAV ───────────────────────── */
+        .bottom-nav {
+            background: #1b1c2d;
+            height: 66px;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            flex-shrink: 0;
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+        }
 
-/* ── CONTENT AREA ── */
-.content-area{flex:1;min-height:0;overflow-y:auto;scrollbar-width:none;display:flex;flex-direction:column;}
-.content-area::-webkit-scrollbar{display:none}
+        .nav-btn {
+            width: 52px;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border-radius: 14px;
+        }
+        .nav-btn svg { opacity: 0.3; transition: opacity .2s; }
+        .nav-btn.active svg { opacity: 1; }
 
-/* ── MODEL PICKER ── */
-.model-section{
-  min-height:100%;
-  display:flex;flex-direction:column;
-  align-items:center;
-  padding:0 16px;text-align:center;width:100%;
-  flex-shrink:0;
-}
-#spacer,#spacer2{flex:1;width:100%;}
-.empty-icon{width:80px;height:80px;border-radius:22px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;justify-content:center;color:rgba(141,170,246,0.65);margin-bottom:6px;}
-.empty-icon svg{width:36px;height:36px;stroke:currentColor;fill:none;stroke-width:1.5;}
-.model-section h3{font-size:17px;font-weight:600;color:rgba(230,238,255,0.75);margin-bottom:4px;}
-.model-section p{font-size:13px;color:rgba(180,200,235,0.32);margin-bottom:18px;}
-.model-picker{display:flex;flex-direction:row;gap:8px;width:100%;}
-.model-card{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 0;background:#1e1e1e;border:1.5px solid rgba(255,255,255,0.07);border-radius:12px;cursor:pointer;transition:all .2s;text-align:center;}
-.model-card:active{transform:scale(.96)}
-.model-card.selected{border:1.5px solid transparent;background:linear-gradient(#1e1e1e,#1e1e1e) padding-box,linear-gradient(to right,rgba(45,116,232,0.5),rgba(175,231,255,0.4),rgba(111,162,254,0.5)) border-box;}
-.model-name{font-size:13px;font-weight:600;color:rgba(200,215,250,0.45);transition:color .2s;}
-.model-card.selected .model-name{color:rgba(220,232,255,0.92);}
-.model-desc{font-size:10.5px;color:rgba(160,185,230,0.25);line-height:1.3;transition:color .2s;}
-.model-card.selected .model-desc{color:rgba(180,205,240,0.45);}
+        /* ─── SCREEN 1 — WALLET ────────────────── */
+        .wallet-scroll {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 30px 22px 10px;
+            -webkit-overflow-scrolling: touch;
+        }
+        .wallet-scroll::-webkit-scrollbar { display: none; }
 
-/* ── MESSAGES ── */
-.messages{padding:22px 0 8px;width:100%;display:flex;flex-direction:column;gap:12px;}
-.messages::-webkit-scrollbar{display:none}
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
 
-/* empty hint */
-.empty-hint{flex:1;display:flex;align-items:center;justify-content:center;}
-.empty-hint p{font-size:13px;color:rgba(180,200,235,0.2);text-align:center;line-height:1.55;}
+        .page-title {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: .2px;
+        }
 
-/* msg row */
-.msg-row{display:flex;align-items:flex-end;gap:8px;animation:fadein .22s ease;}
-@keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-.msg-row.user{flex-direction:row-reverse}
-.msg-col{display:flex;flex-direction:column;max-width:78%}
-.msg-row.user .msg-col{align-items:flex-end}
-.bubble{padding:10px 14px;border-radius:18px;font-size:14px;line-height:1.52;word-break:break-word;white-space:pre-wrap;}
-.bubble.ai{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);border-bottom-left-radius:4px;color:rgba(225,235,252,0.88);}
-.bubble.user{background:#6c9cfa;border:none;border-bottom-right-radius:4px;color:#fff;}
-.msg-time{font-size:10px;color:rgba(160,185,225,0.28);margin-top:4px;padding:0 2px;}
+        .add-btn {
+            font-size: 24px;
+            color: rgba(255,255,255,.6);
+            line-height: 1;
+            cursor: pointer;
+            user-select: none;
+        }
 
-/* typing */
-.typing-row{display:flex;align-items:flex-end;gap:8px}
-.typing-bubble{padding:12px 16px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);border-radius:18px;border-bottom-left-radius:4px;display:flex;gap:5px;align-items:center;}
-.td{width:6px;height:6px;border-radius:50%;background:rgba(141,170,246,0.6);animation:tdot 1.2s ease-in-out infinite;}
-.td:nth-child(2){animation-delay:.18s}.td:nth-child(3){animation-delay:.36s}
-@keyframes tdot{0%,80%,100%{transform:translateY(0);opacity:.35}40%{transform:translateY(-5px);opacity:1}}
+        /* ─── Credit Card ─── */
+        .credit-card {
+            background: #1b1c2d;
+            border-radius: 22px;
+            padding: 18px 20px 20px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+            min-height: 158px;
+        }
 
-/* ── INPUT ── */
-.input-area{padding:6px 14px 10px;flex-shrink:0;}
-.input-row{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:10px 10px 10px 16px;transition:border-color .2s,box-shadow .2s;}
-.input-row:focus-within{border-color:rgba(141,170,246,0.3);box-shadow:0 0 0 3px rgba(141,170,246,0.06);}
-textarea{flex:1;background:transparent;border:none;outline:none;color:rgba(220,232,255,0.88);font-size:14px;font-family:inherit;line-height:1.45;resize:none;min-height:20px;max-height:100px;height:20px;overflow-y:auto;scrollbar-width:none;}
-textarea::placeholder{color:rgba(160,185,230,0.28)}
-textarea::-webkit-scrollbar{display:none}
-.send-btn{width:36px;height:36px;border-radius:11px;background:linear-gradient(to right,#2d74e8,#afe7ff,#6fa2fe);border:none;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;box-shadow:0 0 14px 4px rgba(111,162,254,0.35),0 0 30px 6px rgba(45,116,232,0.2);transition:all .18s;}
-.send-btn:active{transform:scale(.88)}
-.send-btn:disabled{cursor:default;}
-.send-btn svg{width:16px;height:16px;stroke:#000;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
-</style>
+        .card-pattern {
+            position: absolute;
+            top: 0; right: 0;
+            height: 100%;
+            width: 80%;
+            pointer-events: none;
+        }
+
+        .card-row-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .eur-badge {
+            width: 32px; height: 32px;
+            border-radius: 8px;
+            background: rgba(255,255,255,.12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .card-ccy {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .card-last4 {
+            font-size: 13px;
+            color: rgba(255,255,255,.48);
+            letter-spacing: .4px;
+        }
+
+        .card-balance {
+            font-size: 36px;
+            font-weight: 300;
+            letter-spacing: -.5px;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-row-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            position: relative;
+            z-index: 1;
+        }
+
+        .holder-label {
+            font-size: 9px;
+            color: rgba(255,255,255,.34);
+            letter-spacing: .3px;
+            margin-bottom: 4px;
+        }
+
+        .holder-name {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .visa-logo {
+            font-size: 20px;
+            font-weight: 800;
+            font-style: italic;
+            letter-spacing: 2px;
+        }
+
+        /* ─── Transactions ─── */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .txn-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,.052);
+        }
+
+        .txn-icon {
+            width: 42px; height: 42px;
+            border-radius: 11px;
+            background: rgba(255,255,255,.07);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .txn-name {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .txn-date {
+            font-size: 11.5px;
+            color: rgba(255,255,255,.36);
+        }
+
+        .txn-amount {
+            margin-left: auto;
+            font-size: 14px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        /* ─── SCREEN 2 — STATS ─────────────────── */
+        .stats-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .stats-top {
+            text-align: center;
+            padding: 42px 22px 0;
+            flex-shrink: 0;
+        }
+
+        .total-amount {
+            font-size: 38px;
+            font-weight: 700;
+            letter-spacing: -.5px;
+            margin-bottom: 6px;
+        }
+
+        .total-label {
+            font-size: 13px;
+            color: rgba(255,255,255,.37);
+            margin-bottom: 26px;
+        }
+
+        .tabs-row {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+
+        .tabs-wrap {
+            display: flex;
+            background: rgba(255,255,255,.07);
+            border-radius: 10px;
+            padding: 4px;
+        }
+
+        .tab-btn {
+            padding: 7px 28px;
+            border-radius: 7px;
+            font-size: 13.5px;
+            cursor: pointer;
+            color: rgba(255,255,255,.4);
+            font-weight: 500;
+            user-select: none;
+            transition: all .2s;
+        }
+        .tab-btn.active {
+            background: rgba(255,255,255,.13);
+            color: #fff;
+        }
+
+        /* ─── Chart ─── */
+        .chart-wrap {
+            flex: 1;
+            position: relative;
+            padding: 0 12px;
+            min-height: 0;
+        }
+
+        .chart-svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .chart-tooltip {
+            position: absolute;
+            background: rgba(255,255,255,.13);
+            border: 1px solid rgba(255,255,255,.09);
+            border-radius: 9px;
+            padding: 7px 14px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #fff;
+            white-space: nowrap;
+            pointer-events: none;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        .days-bar {
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 12px 14px;
+            flex-shrink: 0;
+        }
+
+        .day-item {
+            font-size: 13px;
+            color: rgba(255,255,255,.28);
+            font-weight: 500;
+            width: 28px;
+            text-align: center;
+            padding-bottom: 3px;
+        }
+        .day-item.active {
+            color: #fff;
+            font-weight: 700;
+            border-bottom: 2px solid #fff;
+        }
+    </style>
 </head>
 <body>
 
-<div class="bg"><div class="bokeh bk1"></div><div class="bg-text">Basic</div></div>
+<!-- ═══════════ SCREEN 1 — WALLET ═══════════ -->
+<div class="screen active" id="scr-wallet">
 
-<div class="app">
-
-  <!-- Header -->
-  <div class="header">
-    <div class="logo">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-        <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        <polyline points="3.27 6.96 12 12.01 20.73 6.96" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        <line x1="12" y1="22.08" x2="12" y2="12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      <span class="logo-text">AI Chat</span>
-    </div>
-    <div class="header-right">
-      <div class="hbtn" onclick="clearChat()" title="New chat">
-        <svg viewBox="0 0 24 24"><path d="M12 5H5a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-      </div>
-      <div class="hbtn">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
-      </div>
-    </div>
-  </div>
-
-  <div class="content-area">
-    <div class="model-section" id="modelSection">
-      <div id="spacer"></div>
-      <div class="empty-icon">
-        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-      </div>
-      <h3>Start a conversation</h3>
-      <p>Choose a mode below</p>
-      <div class="model-picker">
-        <div class="model-card" onclick="selectModel(this,'normal')">
-          <div class="model-name">Normal</div>
-          <div class="model-desc">Fast replies</div>
+    <div class="wallet-scroll">
+        <div class="page-header">
+            <div class="page-title">Wallets</div>
+            <div class="add-btn">+</div>
         </div>
-        <div class="model-card selected" onclick="selectModel(this,'smart')">
-          <div class="model-name">Smart</div>
-          <div class="model-desc">Accurate & detailed</div>
-        </div>
-        <div class="model-card" onclick="selectModel(this,'best')">
-          <div class="model-name">Smart+</div>
-          <div class="model-desc">Deep reasoning</div>
-        </div>
-      </div>
-      <div class="messages" id="messages"></div>
-      <div id="spacer2"></div>
-    </div>
-  </div>
 
-  <!-- Input -->
-  <div class="input-area">
-    <div class="input-row">
-      <textarea id="input" placeholder="Write a message..." oninput="onInput()" onkeydown="onKey(event)"></textarea>
-      <button class="send-btn" id="sendBtn" onclick="send()" disabled>
-        <svg viewBox="0 0 24 24"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
-      </button>
-    </div>
-  </div>
+        <!-- Credit Card -->
+        <div class="credit-card">
+            <!-- Topographic lines emanating from right -->
+            <svg class="card-pattern" viewBox="0 0 260 158" preserveAspectRatio="xMaxYMid slice">
+                <g fill="none" stroke="white" stroke-linecap="round">
+                    <path d="M295 -28 Q252 18 260 79 Q268 142 222 178" stroke-width="38" opacity=".085"/>
+                    <path d="M268 -36 Q224 12 232 79 Q240 148 190 184" stroke-width="33" opacity=".075"/>
+                    <path d="M242 -44 Q196 6 204 79 Q212 154 158 188" stroke-width="28" opacity=".065"/>
+                    <path d="M216 -52 Q168 0 176 79 Q184 160 126 192" stroke-width="23" opacity=".055"/>
+                    <path d="M190 -60 Q140 -6 148 79 Q156 166 94 196" stroke-width="18" opacity=".045"/>
+                    <path d="M164 -68 Q112 -12 120 79 Q128 172 62 200" stroke-width="14" opacity=".035"/>
+                </g>
+            </svg>
 
+            <div class="card-row-top">
+                <div class="card-left">
+                    <div class="eur-badge">€</div>
+                    <span class="card-ccy">EUR</span>
+                </div>
+                <span class="card-last4">• 5806</span>
+            </div>
+
+            <div class="card-balance">1855.00</div>
+
+            <div class="card-row-bottom">
+                <div>
+                    <div class="holder-label">Holder</div>
+                    <div class="holder-name">Shane Cooper</div>
+                </div>
+                <div class="visa-logo">VISA</div>
+            </div>
+        </div>
+
+        <!-- Transactions -->
+        <div class="section-header">
+            <div class="section-title">Transactions</div>
+            <svg width="20" height="16" viewBox="0 0 20 16" fill="none" opacity=".42">
+                <line x1="0" y1="1"  x2="20" y2="1"  stroke="white" stroke-width="2" stroke-linecap="round"/>
+                <line x1="3" y1="8"  x2="17" y2="8"  stroke="white" stroke-width="2" stroke-linecap="round"/>
+                <line x1="7" y1="15" x2="13" y2="15" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+        </div>
+
+        <!-- Restaurants and Bars -->
+        <div class="txn-item">
+            <div class="txn-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                     stroke="rgba(255,255,255,.72)" stroke-width="1.7"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 2v20M15 2v6a3 3 0 006 0V2M6 2v6M9 2v6M6 8a3 3 0 006 0M6 8v12"/>
+                </svg>
+            </div>
+            <div style="flex:1">
+                <div class="txn-name">Restaurants and Bars</div>
+                <div class="txn-date">11 April, 09:02 am</div>
+            </div>
+            <div class="txn-amount">- €14</div>
+        </div>
+
+        <!-- Grocery -->
+        <div class="txn-item">
+            <div class="txn-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                     stroke="rgba(255,255,255,.72)" stroke-width="1.7"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+                    <line x1="3" y1="6" x2="21" y2="6"/>
+                    <path d="M16 10a4 4 0 01-8 0"/>
+                </svg>
+            </div>
+            <div style="flex:1">
+                <div class="txn-name">Grocery</div>
+                <div class="txn-date">11 April, 09:02 am</div>
+            </div>
+            <div class="txn-amount">- €24</div>
+        </div>
+
+        <!-- Transport -->
+        <div class="txn-item">
+            <div class="txn-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                     stroke="rgba(255,255,255,.72)" stroke-width="1.7"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 17H3a2 2 0 01-2-2v-4l3-5h14l3 5v4a2 2 0 01-2 2h-2"/>
+                    <circle cx="7"  cy="17" r="2"/>
+                    <circle cx="17" cy="17" r="2"/>
+                </svg>
+            </div>
+            <div style="flex:1">
+                <div class="txn-name">Transport</div>
+                <div class="txn-date">11 April, 09:02 am</div>
+            </div>
+            <div class="txn-amount">- €25</div>
+        </div>
+
+        <!-- Restaurants and Bars #2 -->
+        <div class="txn-item">
+            <div class="txn-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                     stroke="rgba(255,255,255,.72)" stroke-width="1.7"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 2v20M15 2v6a3 3 0 006 0V2M6 2v6M9 2v6M6 8a3 3 0 006 0M6 8v12"/>
+                </svg>
+            </div>
+            <div style="flex:1">
+                <div class="txn-name">Restaurants and Bars</div>
+                <div class="txn-date">11 April, 09:02 am</div>
+            </div>
+            <div class="txn-amount">- €48</div>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <div class="nav-btn active" onclick="goTo('wallet')">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+                 stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="5" width="20" height="15" rx="3"/>
+                <path d="M2 10h20"/>
+                <circle cx="16" cy="14.5" r="1.5" fill="white" stroke="none"/>
+            </svg>
+        </div>
+        <div class="nav-btn" onclick="goTo('stats')">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+                 stroke="white" stroke-width="2" stroke-linecap="round">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 12V6"/>
+                <path d="M12 12l4.2-2.4"/>
+            </svg>
+        </div>
+        <div class="nav-btn" onclick="goTo('wallet')">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+                 stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="3" width="20" height="18" rx="3"/>
+                <line x1="2"  y1="9" x2="22" y2="9"/>
+                <line x1="9"  y1="9" x2="9"  y2="21"/>
+            </svg>
+        </div>
+        <div class="nav-btn" onclick="goTo('wallet')">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+                 stroke="white" stroke-width="2" stroke-linecap="round">
+                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+            </svg>
+        </div>
+    </div>
 </div>
 
+
+<!-- ═══════════ SCREEN 2 — STATS ═══════════ -->
+<div class="screen" id="scr-stats">
+
+    <div class="stats-body">
+        <div class="stats-top">
+            <div class="total-amount">€ 2804.00</div>
+            <div class="total-label">Total Balance</div>
+            <div class="tabs-row">
+                <div class="tabs-wrap">
+                    <div class="tab-btn active" onclick="switchTab(this)">Income</div>
+                    <div class="tab-btn"        onclick="switchTab(this)">Spent</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="chart-wrap" id="chartWrap">
+            <div class="chart-tooltip" id="tooltip">$ 2540.00</div>
+
+            <!--
+                viewBox 320 × 190
+                Peak of white wave: x=194, y=60
+                W column: 4th of 6, evenly at x = 16,74,131,194,252,304
+            -->
+            <svg class="chart-svg" id="chartSvg"
+                 viewBox="0 0 320 190" preserveAspectRatio="none">
+                <defs>
+                    <linearGradient id="wGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%"   stop-color="white" stop-opacity=".20"/>
+                        <stop offset="100%" stop-color="white" stop-opacity="0"/>
+                    </linearGradient>
+                    <linearGradient id="gGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%"   stop-color="white" stop-opacity=".07"/>
+                        <stop offset="100%" stop-color="white" stop-opacity="0"/>
+                    </linearGradient>
+                </defs>
+
+                <!-- gray background wave — fill -->
+                <path d="M0,136 C30,118 52,134 80,120 C108,106 124,98 152,108
+                          C180,118 198,132 224,114 C250,96 284,80 320,92
+                          L320,190 L0,190 Z"
+                      fill="url(#gGrad)"/>
+                <!-- gray background wave — stroke -->
+                <path d="M0,136 C30,118 52,134 80,120 C108,106 124,98 152,108
+                          C180,118 198,132 224,114 C250,96 284,80 320,92"
+                      fill="none" stroke="rgba(255,255,255,.22)" stroke-width="1.8"/>
+
+                <!-- white foreground wave — fill -->
+                <path d="M0,162 C18,156 38,160 62,150 C88,138 106,128 130,114
+                          C150,102 164,84 182,68 C192,57 200,55 210,64
+                          C224,76 240,102 264,118 C288,134 308,126 320,130
+                          L320,190 L0,190 Z"
+                      fill="url(#wGrad)"/>
+                <!-- white foreground wave — stroke -->
+                <path d="M0,162 C18,156 38,160 62,150 C88,138 106,128 130,114
+                          C150,102 164,84 182,68 C192,57 200,55 210,64
+                          C224,76 240,102 264,118 C288,134 308,126 320,130"
+                      fill="none" stroke="white" stroke-width="2.6"
+                      stroke-linejoin="round" stroke-linecap="round"/>
+
+                <!-- vertical dashed line at peak -->
+                <line x1="194" y1="60" x2="194" y2="188"
+                      stroke="rgba(255,255,255,.18)" stroke-width="1"
+                      stroke-dasharray="4,3"/>
+
+                <!-- peak dot -->
+                <circle cx="194" cy="60" r="10" fill="rgba(255,255,255,.12)"/>
+                <circle cx="194" cy="60" r="5"  fill="white"/>
+            </svg>
+        </div>
+
+        <div class="days-bar">
+            <div class="day-item">S</div>
+            <div class="day-item">M</div>
+            <div class="day-item">T</div>
+            <div class="day-item active">W</div>
+            <div class="day-item">T</div>
+            <div class="day-item">F</div>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <div class="nav-btn" onclick="goTo('wallet')">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+                 stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="5" width="20" height="15" rx="3"/>
+                <path d="M2 10h20"/>
+                <circle cx="16" cy="14.5" r="1.5" fill="white" stroke="none"/>
+            </svg>
+        </div>
+        <div class="nav-btn active" onclick="goTo('stats')">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+                 stroke="white" stroke-width="2" stroke-linecap="round">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 12V6"/>
+                <path d="M12 12l4.2-2.4"/>
+            </svg>
+        </div>
+        <div class="nav-btn" onclick="goTo('stats')">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+                 stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="3" width="20" height="18" rx="3"/>
+                <line x1="2"  y1="9" x2="22" y2="9"/>
+                <line x1="9"  y1="9" x2="9"  y2="21"/>
+            </svg>
+        </div>
+        <div class="nav-btn" onclick="goTo('stats')">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+                 stroke="white" stroke-width="2" stroke-linecap="round">
+                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+            </svg>
+        </div>
+    </div>
+</div>
+
+
 <script>
-const tg=window.Telegram?.WebApp;
-if(tg){tg.ready();tg.expand();}
+    if (window.Telegram && window.Telegram.WebApp) {
+        Telegram.WebApp.ready();
+        Telegram.WebApp.expand();
+    }
 
-let busy=false,currentModel='smart',chatStarted=false;
-const messagesEl=document.getElementById('messages');
-const inputEl=document.getElementById('input');
-const sendBtnEl=document.getElementById('sendBtn');
-const modelSectionEl=document.getElementById('modelSection');
-const spacerEl=document.getElementById('spacer');
-const spacer2El=document.getElementById('spacer2');
+    function goTo(screen) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById('scr-' + screen).classList.add('active');
+        if (screen === 'stats') requestAnimationFrame(positionTooltip);
+    }
 
-function selectModel(el,model){
-  document.querySelectorAll('.model-card').forEach(c=>c.classList.remove('selected'));
-  el.classList.add('selected'); currentModel=model;
-  tg?.HapticFeedback?.selectionChanged();
-}
+    function switchTab(el) {
+        el.closest('.tabs-wrap').querySelectorAll('.tab-btn')
+          .forEach(t => t.classList.remove('active'));
+        el.classList.add('active');
+    }
 
-function time(){
-  const d=new Date();let h=d.getHours();
-  const m=d.getMinutes().toString().padStart(2,'0');
-  const ap=h>=12?'PM':'AM';h=h%12||12;
-  return h+':'+m+' '+ap;
-}
+    function positionTooltip() {
+        const svg  = document.getElementById('chartSvg');
+        const tip  = document.getElementById('tooltip');
+        const wrap = document.getElementById('chartWrap');
+        if (!svg || !tip || !wrap) return;
 
-const contentAreaEl=document.querySelector('.content-area');
-function scroll(){setTimeout(()=>{if(contentAreaEl)contentAreaEl.scrollTop=contentAreaEl.scrollHeight;},40);}
+        const sr = svg.getBoundingClientRect();
+        const wr = wrap.getBoundingClientRect();
 
-function appendMsg(role,text){
-  if(!chatStarted){
-    chatStarted=true;
-    const h=spacerEl?spacerEl.offsetHeight:0;
-    if(spacerEl)spacerEl.style.flex='0 0 '+h+'px';
-    if(spacer2El)spacer2El.style.flex='0 0 0';
-  }
-  const row=document.createElement('div');row.className='msg-row '+(role==='user'?'user':'ai');
-  const col=document.createElement('div');col.className='msg-col';
-  const bubble=document.createElement('div');bubble.className='bubble '+(role==='user'?'user':'ai');
-  bubble.textContent=text;
-  const t=document.createElement('div');t.className='msg-time';t.textContent=time();
-  col.appendChild(bubble);col.appendChild(t);row.appendChild(col);
-  messagesEl.appendChild(row);scroll();
-}
+        // viewBox peak: x=194, y=60  in  320×190
+        const px = (sr.left - wr.left) + (194 / 320) * sr.width;
+        const py = (sr.top  - wr.top)  + (60  / 190) * sr.height;
 
-function showTyping(){
-  const row=document.createElement('div');row.className='typing-row';row.id='typing';
-  const b=document.createElement('div');b.className='typing-bubble';
-  for(let i=0;i<3;i++){const d=document.createElement('div');d.className='td';b.appendChild(d);}
-  row.appendChild(b);messagesEl.appendChild(row);scroll();
-}
-function hideTyping(){const r=document.getElementById('typing');if(r)r.remove();}
+        tip.style.left = Math.max(0, px - tip.offsetWidth  / 2) + 'px';
+        tip.style.top  = Math.max(0, py - tip.offsetHeight - 12) + 'px';
+    }
 
-const replyFns=[
-  t=>/neural|network|нейрон/i.test(t)&&'A neural network is a mathematical model inspired by the brain. Layers of nodes receive inputs, multiply by weights, and pass results forward. Weights adjust during training to minimize error.',
-  t=>/python|sort|bubble|код/i.test(t)&&'def bubble_sort(arr):\n    n=len(arr)\n    for i in range(n):\n        for j in range(0,n-i-1):\n            if arr[j]>arr[j+1]:\n                arr[j],arr[j+1]=arr[j+1],arr[j]\n    return arr',
-  t=>/translat|english|перевод/i.test(t)&&'"Dobryy den" translates to "Good afternoon" or "Hello". Want to translate something else?',
-  t=>/startup|idea|стартап/i.test(t)&&'5 startup ideas:\n\n1. AI assistant for freelancers\n2. Anonymous dev mentorship\n3. Health monitoring via wearables\n4. Local services with AI matching\n5. Automated A/B content testing',
-];
-const delays={normal:400,smart:800,best:1400};
-function getReply(text){
-  return 'This is package basic, buy it soon and enjoy working!';
-}
-
-async function send(){
-  const text=inputEl.value.trim();
-  if(!text||busy)return;
-  busy=true;
-  appendMsg('user',text);
-  inputEl.value='';inputEl.style.height='20px';sendBtnEl.disabled=true;
-  showTyping();
-  await new Promise(r=>setTimeout(r,(delays[currentModel]||800)+Math.random()*600));
-  hideTyping();appendMsg('ai',getReply(text));
-  busy=false;toggleSend();
-  tg?.HapticFeedback?.impactOccurred('light');
-}
-
-function onInput(){inputEl.style.height='20px';inputEl.style.height=Math.min(inputEl.scrollHeight,100)+'px';toggleSend();}
-function toggleSend(){sendBtnEl.disabled=!inputEl.value.trim()||busy;}
-function onKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();if(!sendBtnEl.disabled)send();}}
-
-function clearChat(){
-  messagesEl.querySelectorAll('.msg-row,.typing-row').forEach(r=>r.remove());
-  modelSectionEl.style.display='';
-  chatStarted=false;
-  if(spacerEl)spacerEl.style.flex='1';
-  if(spacer2El)spacer2El.style.flex='1';
-  busy=false;toggleSend();
-  tg?.HapticFeedback?.impactOccurred('medium');
-}
+    window.addEventListener('resize', () => {
+        if (document.getElementById('scr-stats').classList.contains('active'))
+            positionTooltip();
+    });
 </script>
 </body>
 </html>
