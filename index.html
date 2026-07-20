@@ -45,6 +45,17 @@
             border-radius: 20px;
             padding: 8px 64px;
             margin: 0 auto 20px;
+            position: relative;
+        }
+
+        .bottom-nav::before {
+            content: '';
+            position: absolute;
+            inset: -28px -60px;
+            background: radial-gradient(ellipse at center, rgba(20,20,22,0.72) 0%, transparent 70%);
+            filter: blur(16px);
+            z-index: -1;
+            pointer-events: none;
         }
 
         .nav-btn {
@@ -94,13 +105,14 @@
         .card-wrapper {
             position: relative;
             margin-bottom: 48px;
+            transform: translateX(-8px);
         }
 
         .card-back {
             position: absolute;
             bottom: -20px;
-            left: 15px;
-            right: -28px;
+            left: 10px;
+            right: -23px;
             background: linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)), linear-gradient(135deg, #1cb5e0 0%, #43c6ac 35%, #f7c59f 70%, #f9d423 100%);
             border-radius: 22px;
             z-index: 1;
@@ -168,7 +180,7 @@
             border-radius: 22px;
             padding: 18px 20px 20px;
             margin-bottom: 0;
-            margin-right: -12px;
+            margin-right: 0;
             position: relative;
             z-index: 2;
             overflow: hidden;
