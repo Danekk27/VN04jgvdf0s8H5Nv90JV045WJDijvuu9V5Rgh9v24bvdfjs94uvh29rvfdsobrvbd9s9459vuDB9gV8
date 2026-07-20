@@ -3,700 +3,409 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Gaming Store</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Righteous&display=swap" rel="stylesheet">
+<title>AI Chat</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 
-:root{
-  --bg:#202835;
-  --surf:linear-gradient(to bottom,#2a3342,#18202a);
-  --surf2:#22243c;
-  --blue:#5078ff;
-  --blue2:#2a52e8;
-  --blue3:#1438b8;
-  --grad:linear-gradient(to left,#41bbf2,#4745e8);
-  --card-blue:linear-gradient(158deg,#4e82ff 0%,#2550e5 46%,#1435b5 100%);
-  --card-dark:linear-gradient(158deg,#3a2f6a 0%,#241d52 46%,#18143e 100%);
-  --header-grad:linear-gradient(148deg,#60aaff 0%,#4272f0 32%,#2452e5 62%,#1438c8 100%);
-  --t:#fff;
-  --tm:#8898b5;
-  --td:#404870;
-  --br:rgba(255,255,255,0.07);
-}
-
 html,body{
   width:100%;height:100%;
-  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Helvetica Neue',sans-serif;
   overflow:hidden;
-  margin:0;padding:0;
+  -webkit-font-smoothing:antialiased;
 }
 
-/* ─── APP SHELL ─── */
+/* ── BACKGROUND ── */
+.bg{
+  position:fixed;inset:0;z-index:0;
+  background:#141414;
+}
+.bokeh{
+  position:absolute;border-radius:50%;
+  pointer-events:none;z-index:1;
+}
+.bk1{
+  width:700px;height:700px;
+  background:radial-gradient(circle, rgba(141,170,246,1) 0%, rgba(100,140,230,0.8) 30%, rgba(50,90,190,0.35) 60%, transparent 72%);
+  filter:blur(90px);
+  left:-200px;top:-220px;
+}
+
+/* ── APP ── */
 .app{
-  position:fixed;
-  inset:0;
-  background:linear-gradient(to bottom,#202835,#15181f);
+  position:relative;z-index:2;
+  display:flex;flex-direction:column;
+  height:100svh;height:100vh;
   overflow:hidden;
 }
 
-/* ─── SCREENS ─── */
-.screen{
-  position:absolute;inset:0;
-  display:flex;flex-direction:column;
-  transition:transform .36s cubic-bezier(.4,0,.2,1);
-  will-change:transform;
-}
-#home{transform:translateX(0)}
-#detail{transform:translateX(100%)}
-#home.away{transform:translateX(-100%)}
-#detail.open{transform:translateX(0)}
-
-/* ════════════════════════════════
-   HOME
-════════════════════════════════ */
-#home{background:linear-gradient(to bottom,#202835,#15181f)}
-
-/* topbar */
-.topbar{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:20px 22px 10px;
-  flex-shrink:0;
-}
-.ic-btn{
-  width:46px;height:46px;
-  background:linear-gradient(145deg,#2a3a4e,#18222e);
-  border:1px solid rgba(255,255,255,0.07);
-  border-radius:15px;
-  display:flex;align-items:center;justify-content:center;
-  cursor:pointer;
-  position:relative;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,0.06);
-}
-.ic-btn svg{
-  width:20px;height:20px;
-  stroke:#c8d8e8;fill:none;
-  stroke-width:1.85;stroke-linecap:round;stroke-linejoin:round;
-}
-.badge{
-  position:absolute;top:-5px;right:-5px;
-  width:18px;height:18px;
-  background:var(--blue);
-  border:2.5px solid var(--bg);
-  border-radius:50%;
-  font-size:9px;font-weight:800;color:#fff;
-  display:flex;align-items:center;justify-content:center;
-}
-
-/* heading */
-.heading{
-  padding:6px 22px 18px;
-  flex-shrink:0;
-}
-.heading .r1{
-  font-size:38px;font-weight:800;
-  color:var(--t);line-height:1.08;letter-spacing:-1.2px;
-}
-.heading .r2{
-  font-size:38px;font-weight:300;font-style:italic;
-  color:var(--t);line-height:1.08;letter-spacing:-1.2px;
-}
-
-/* category row */
-.cat-row{
-  display:flex;align-items:center;gap:10px;
-  padding:0 18px 12px;
-  flex-shrink:0;
-  position:relative;z-index:2;
-}
-.sliders-btn{
-  width:42px;height:42px;
-  background:var(--surf);
-  border:1px solid var(--br);
-  border-radius:13px;
-  display:flex;align-items:center;justify-content:center;
-  flex-shrink:0;cursor:pointer;
-}
-.sliders-btn svg{width:19px;height:19px;stroke:var(--tm);fill:none;stroke-width:1.8;stroke-linecap:round}
-.cats{display:flex;gap:10px;overflow:visible;padding:6px 4px;}
-.cat{
-  width:54px;height:54px;
-  background:linear-gradient(145deg,#2a3a4e,#18222e);
-  border:1px solid rgba(255,255,255,0.09);
-  border-radius:17px;
-  display:flex;align-items:center;justify-content:center;
-  flex-shrink:0;cursor:pointer;
-  transition:all .25s;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,0.06);
-}
-.cat.on{
-  background:linear-gradient(to bottom,#41bbf2,#4745e8);
-  border-color:rgba(65,187,242,0.5);
-  box-shadow:0 0 18px rgba(65,187,242,0.55),0 0 6px rgba(71,69,232,0.4),inset 0 1px 0 rgba(255,255,255,0.15);
-}
-.cat svg{width:24px;height:24px;stroke:#6a7f96;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;transition:all .25s}
-.cat.on svg{stroke:#fff;filter:drop-shadow(0 0 4px rgba(255,255,255,0.6))}
-
-/* carousel */
-.reel-wrap{
-  flex:1;min-height:0;
-  padding:0 22px;
-  overflow:visible;
-}
-.reel{
-  display:flex;
-  height:100%;
-  overflow:visible;
-  padding-bottom:4px;
-}
-
-/* product card */
-.pcard{
-  flex:0 0 72%;
-  scroll-snap-align:start;
-  border-radius:28px;
-  display:flex;flex-direction:column;
-  overflow:visible;
-  cursor:pointer;
-  border:1px solid rgba(255,255,255,.09);
-  transition:transform .15s;
-  position:relative;
-}
-.pcard:active{transform:scale(.97)}
-.pcard.blue{background:var(--card-blue)}
-.pcard.dark{background:var(--card-dark)}
-
-.pcard-img{
-  flex:1;min-height:0;
-  display:flex;align-items:center;justify-content:center;
-  padding:22px 14px 10px;
-  position:relative;
-}
-.pcard-img::before{
-  content:'';
-  position:absolute;inset:0;
-  background:radial-gradient(ellipse at 50% 38%,rgba(255,255,255,.13) 0%,transparent 68%);
-  pointer-events:none;
-}
-
-.pcard-foot{
-  padding:12px 20px 20px;
-  background:linear-gradient(to top,rgba(0,0,0,.6) 0%,transparent 100%);
-  flex-shrink:0;
-  border-radius:0 0 16px 16px;
-}
-.pcard-foot h3{
-  font-size:20px;font-weight:700;
-  color:#fff;margin-bottom:4px;
-}
-.pcard-foot p{font-size:12.5px;color:rgba(255,255,255,.5)}
-.pcard-foot p b{font-weight:600;color:rgba(255,255,255,.78)}
-
-/* hero bg block */
-.hero-bg{
-  width:100%;height:100%;
-  border-radius:28px;
-  background:linear-gradient(to bottom,#38b0ed 0%,#4946f9 100%);
-  position:relative;
-  overflow:hidden;
-}
-.hero-glow{
-  position:absolute;
-  width:260px;height:260px;
-  border-radius:50%;
-  background:radial-gradient(circle,rgba(255,255,255,.18) 0%,transparent 70%);
-  top:-60px;right:-60px;
-  pointer-events:none;
-}
-.hero-ring{
-  position:absolute;
-  border-radius:50%;
-  border:1px solid rgba(255,255,255,.12);
-  pointer-events:none;
-}
-.hero-ring1{width:320px;height:320px;bottom:-120px;right:-100px;}
-.hero-ring2{width:200px;height:200px;bottom:-60px;right:-30px;border-color:rgba(255,255,255,.07);}
-
-/* bottom nav */
-.bnav{
-  flex-shrink:0;
-  background:var(--surf);
-  border-radius:26px;
-  box-shadow:0 8px 40px rgba(0,0,0,0.55);
-  display:flex;align-items:center;
-  padding:14px 20px;
-  gap:0;
-  margin:0 16px 30px;
-}
-.nbtn{
-  display:flex;align-items:center;justify-content:center;
-  cursor:pointer;
-  padding:11px 14px;
-  border-radius:16px;
-  transition:all .2s;
-  flex:1;
-}
-.nbtn svg{
-  width:23px;height:23px;
-  stroke:#4a5470;fill:none;
-  stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;
-}
-.nbtn.on{
-  background:linear-gradient(to right,#4f8bff,#6c5ce7);
-  flex:none;
-  padding:12px 22px;
-  gap:9px;
-  border-radius:18px;
-  box-shadow:0 4px 20px rgba(79,139,255,0.45);
-  margin-right:auto;
-}
-.nbtn.on svg{
-  stroke:#fff;
-  width:20px;height:20px;
-}
-.nbtn.on .nlabel{
-  font-size:15px;font-weight:700;color:#fff;white-space:nowrap;
-}
-
-/* ════════════════════════════════
-   DETAIL
-════════════════════════════════ */
-#detail{background:linear-gradient(to bottom,#202835,#15181f)}
-
-.dheader{
-  flex-shrink:0;
-  height:240px;
-  background:var(--header-grad);
-  border-radius:0 0 36px 36px;
-  position:relative;overflow:hidden;
-  display:flex;flex-direction:column;
-  padding:20px 22px 0;
-}
-/* decorative ring */
-.dheader::before{
-  content:'';
-  position:absolute;
-  width:300px;height:300px;border-radius:50%;
-  border:1px solid rgba(255,255,255,.1);
-  top:-110px;right:-70px;pointer-events:none;
-}
-.dheader::after{
-  content:'';
-  position:absolute;
-  width:190px;height:190px;border-radius:50%;
-  border:1px solid rgba(255,255,255,.07);
-  top:-20px;right:30px;pointer-events:none;
-}
-
-.dtopbar{
-  display:flex;align-items:center;justify-content:space-between;
-  position:relative;z-index:2;flex-shrink:0;
-}
-.back{
-  width:38px;height:38px;
-  background:rgba(255,255,255,.15);
-  border-radius:12px;
-  display:flex;align-items:center;justify-content:center;
-  cursor:pointer;
-  backdrop-filter:blur(8px);
-}
-.back svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round}
-.dcart{
-  width:38px;height:38px;
-  background:rgba(255,255,255,.15);
-  border-radius:12px;
-  display:flex;align-items:center;justify-content:center;
-  cursor:pointer;position:relative;
-  backdrop-filter:blur(8px);
-}
-.dcart svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.dcart .badge{background:#fff;color:var(--blue2);border-color:transparent;font-size:8px}
-
-/* specs + controller in header */
-.dcontent{
-  flex:1;min-height:0;
-  display:flex;align-items:flex-end;
-  position:relative;z-index:2;
-}
-.dspecs{
-  flex:1;
-  padding-bottom:26px;
-  display:flex;flex-direction:column;gap:14px;
-}
-.spc-lbl{
-  font-size:10px;font-weight:700;
-  letter-spacing:2px;text-transform:uppercase;
-  color:rgba(255,255,255,.45);
-  margin-bottom:2px;
-}
-.spc-val{
-  font-size:15px;font-weight:600;
-  color:rgba(255,255,255,.95);
-}
-
-/* detail scroll */
-.dscroll{
-  flex:1;overflow-y:auto;scrollbar-width:none;
-  padding:0 22px 14px;
-}
-.dscroll::-webkit-scrollbar{display:none}
-
-.dtitle-row{
-  display:flex;align-items:flex-start;justify-content:space-between;
-  margin:20px 0 11px;
-}
-.dtitle{
-  font-size:31px;font-weight:800;
-  color:var(--t);letter-spacing:-.5px;
-}
-.bkmark{
-  width:40px;height:40px;
-  background:var(--surf);
-  border:1px solid var(--br);
-  border-radius:13px;
-  display:flex;align-items:center;justify-content:center;
-  cursor:pointer;flex-shrink:0;margin-top:4px;
-}
-.bkmark svg{width:18px;height:18px;stroke:var(--tm);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-
-.ddesc{
-  font-size:13.5px;color:var(--tm);
-  line-height:1.72;margin-bottom:20px;
-}
-
-/* features 2x2 */
-.feats{
-  display:grid;grid-template-columns:1fr 1fr;
-  gap:10px;margin-bottom:12px;
-}
-.feat{
-  background:var(--surf);
-  border:1px solid var(--br);
-  border-radius:16px;
-  padding:14px 14px;
+/* ── HEADER ── */
+.header{
   display:flex;align-items:center;gap:12px;
+  padding:18px 20px 14px;
+  flex-shrink:0;
+  border-bottom:1px solid rgba(255,255,255,0.06);
 }
-.ficon{
-  width:38px;height:38px;
-  border-radius:11px;
+.ai-avatar{
+  width:38px;height:38px;border-radius:50%;
+  background:linear-gradient(135deg,#4a8fff,#1f5bef);
   display:flex;align-items:center;justify-content:center;
   flex-shrink:0;
 }
-.ficon svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:1.85;stroke-linecap:round;stroke-linejoin:round}
-.fi1{background:linear-gradient(135deg,#7c5bf8,#5038d0)}
-.fi2{background:linear-gradient(135deg,#3b74f0,#1a4ad0)}
-.fi3{background:linear-gradient(135deg,#e040a0,#b01870)}
-.fi4{background:linear-gradient(135deg,#f59030,#e06010)}
-.fn{font-size:13px;font-weight:700;color:var(--t);line-height:1.2}
-.fs{font-size:11px;color:var(--tm);margin-top:2px}
+.ai-avatar svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.ai-info{flex:1}
+.ai-name{font-size:15px;font-weight:600;color:#fff;}
+.ai-status{
+  display:flex;align-items:center;gap:5px;
+  margin-top:2px;
+}
+.status-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:#4ade80;
+  box-shadow:0 0 6px rgba(74,222,128,0.6);
+}
+.status-text{font-size:11.5px;color:rgba(200,215,245,0.45);}
+.header-btn{
+  width:34px;height:34px;border-radius:10px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.07);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;color:rgba(200,215,245,0.4);
+  transition:all .2s;
+}
+.header-btn:active{background:rgba(255,255,255,0.1);color:rgba(200,215,245,0.8)}
+.header-btn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 
-/* buy bar */
-.buybar{
-  flex-shrink:0;
-  background:var(--surf);
-  border-top:1px solid var(--br);
-  display:flex;align-items:center;justify-content:space-between;
-  padding:16px 22px 30px;
+/* ── MESSAGES ── */
+.messages{
+  flex:1;min-height:0;
+  overflow-y:auto;scrollbar-width:none;
+  padding:18px 16px 10px;
+  display:flex;flex-direction:column;
+  gap:12px;
 }
-.pricebox{display:flex;align-items:baseline;gap:1px}
-.psym{font-size:18px;font-weight:700;color:var(--t);margin-bottom:3px}
-.pnum{font-size:40px;font-weight:800;color:var(--t);letter-spacing:-1.5px;line-height:1}
-.preorder{
-  height:54px;min-width:155px;
-  background:var(--grad);
-  border-radius:18px;
+.messages::-webkit-scrollbar{display:none}
+
+/* empty state */
+.empty{
+  flex:1;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:10px;text-align:center;
+  padding:30px 20px;
+}
+.empty-icon{
+  width:54px;height:54px;border-radius:16px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.07);
   display:flex;align-items:center;justify-content:center;
-  gap:10px;cursor:pointer;
-  font-size:16px;font-weight:700;color:#fff;
-  box-shadow:0 6px 26px rgba(82,120,248,.55);
-  transition:transform .15s;
-  padding:0 20px;
+  color:rgba(141,170,246,0.6);
+  margin-bottom:6px;
 }
-.preorder:active{transform:scale(.96)}
-.preorder svg{width:20px;height:20px;stroke:#fff;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.empty-icon svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.5}
+.empty h3{font-size:16px;font-weight:600;color:rgba(230,238,255,0.7);}
+.empty p{font-size:13px;color:rgba(180,200,235,0.35);line-height:1.55;max-width:210px;}
+
+/* message row */
+.msg-row{
+  display:flex;align-items:flex-end;gap:8px;
+  animation:fadein .22s ease;
+}
+@keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.msg-row.user{flex-direction:row-reverse}
+
+.msg-col{display:flex;flex-direction:column;max-width:78%}
+.msg-row.user .msg-col{align-items:flex-end}
+
+.bubble{
+  padding:10px 14px;
+  border-radius:18px;
+  font-size:14px;line-height:1.52;
+  word-break:break-word;white-space:pre-wrap;
+}
+.bubble.ai{
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.08);
+  border-bottom-left-radius:4px;
+  color:rgba(225,235,252,0.88);
+}
+.bubble.user{
+  background:linear-gradient(135deg,rgba(74,143,255,0.22),rgba(31,91,239,0.16));
+  border:1px solid rgba(100,160,255,0.2);
+  border-bottom-right-radius:4px;
+  color:rgba(220,232,255,0.92);
+}
+.msg-time{
+  font-size:10px;color:rgba(160,185,225,0.28);
+  margin-top:4px;padding:0 2px;
+}
+
+/* typing */
+.typing-row{display:flex;align-items:flex-end;gap:8px}
+.typing-bubble{
+  padding:12px 16px;
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:18px;border-bottom-left-radius:4px;
+  display:flex;gap:5px;align-items:center;
+}
+.td{width:6px;height:6px;border-radius:50%;background:rgba(141,170,246,0.6);animation:tdot 1.2s ease-in-out infinite;}
+.td:nth-child(2){animation-delay:.18s}
+.td:nth-child(3){animation-delay:.36s}
+@keyframes tdot{0%,80%,100%{transform:translateY(0);opacity:.35}40%{transform:translateY(-5px);opacity:1}}
+
+/* ── SUGGESTIONS ── */
+.suggestions{
+  padding:0 16px 12px;
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:7px;flex-shrink:0;
+}
+.sg{
+  padding:10px 12px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.07);
+  border-radius:13px;cursor:pointer;
+  transition:all .18s;
+}
+.sg:active{background:rgba(141,170,246,0.1);border-color:rgba(141,170,246,0.25);transform:scale(.97)}
+.sg-text{font-size:12px;color:rgba(180,205,240,0.5);line-height:1.4;}
+
+/* ── INPUT ── */
+.input-area{
+  padding:8px 14px 18px;
+  flex-shrink:0;
+}
+.input-row{
+  display:flex;align-items:flex-end;gap:8px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:20px;
+  padding:10px 10px 10px 16px;
+  transition:border-color .2s,box-shadow .2s;
+}
+.input-row:focus-within{
+  border-color:rgba(141,170,246,0.3);
+  box-shadow:0 0 0 3px rgba(141,170,246,0.06);
+}
+textarea{
+  flex:1;background:transparent;border:none;outline:none;
+  color:rgba(220,232,255,0.88);
+  font-size:14px;font-family:inherit;
+  line-height:1.45;resize:none;
+  min-height:20px;max-height:100px;height:20px;
+  overflow-y:auto;scrollbar-width:none;
+}
+textarea::placeholder{color:rgba(160,185,230,0.28)}
+textarea::-webkit-scrollbar{display:none}
+
+.send-btn{
+  width:36px;height:36px;border-radius:50%;
+  background:linear-gradient(135deg,#4a8fff,#1f5bef);
+  border:none;cursor:pointer;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 16px rgba(74,143,255,0.35);
+  transition:all .18s;
+}
+.send-btn:active{transform:scale(.88)}
+.send-btn:disabled{
+  background:rgba(255,255,255,0.07);
+  box-shadow:none;cursor:default;
+}
+.send-btn svg{width:15px;height:15px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transform:translateX(1px)}
 </style>
 </head>
 <body>
 
-<!-- shared SVG defs (filters etc) -->
-<svg style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">
-  <defs>
-    <filter id="sh" x="-25%" y="-25%" width="150%" height="150%">
-      <feDropShadow dx="0" dy="9" stdDeviation="13" flood-color="rgba(0,0,0,.82)"/>
-    </filter>
-    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur stdDeviation="5" result="b"/>
-      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
-    <radialGradient id="bG" cx="50%" cy="32%" r="65%">
-      <stop offset="0%" stop-color="#22263e"/>
-      <stop offset="100%" stop-color="#0d0f1e"/>
-    </radialGradient>
-    <radialGradient id="stG" cx="38%" cy="34%" r="58%">
-      <stop offset="0%" stop-color="#292d46"/>
-      <stop offset="100%" stop-color="#0c0e1c"/>
-    </radialGradient>
-    <radialGradient id="dkG" cx="50%" cy="32%" r="65%">
-      <stop offset="0%" stop-color="#1e1c36"/>
-      <stop offset="100%" stop-color="#0b0a1a"/>
-    </radialGradient>
-  </defs>
-</svg>
+<div class="bg">
+  <div class="bokeh bk1"></div>
+</div>
 
 <div class="app">
 
-<!-- ══════════ HOME ══════════ -->
-<div class="screen" id="home">
-
-  <div class="topbar">
-    <div class="ic-btn">
-      <svg viewBox="0 0 24 24">
-        <line x1="3" y1="7" x2="21" y2="7"/>
-        <line x1="3" y1="12" x2="16" y2="12"/>
-        <line x1="3" y1="17" x2="21" y2="17"/>
-      </svg>
+  <!-- Header -->
+  <div class="header">
+    <div class="ai-avatar">
+      <svg viewBox="0 0 24 24"><path d="M12 2a2 2 0 012 2v1a2 2 0 01-2 2 2 2 0 01-2-2V4a2 2 0 012-2z"/><path d="M12 7v10M8 9l4-2 4 2M8 15l4 2 4-2"/><rect x="3" y="9" width="4" height="6" rx="1"/><rect x="17" y="9" width="4" height="6" rx="1"/></svg>
     </div>
-    <div class="ic-btn">
-      <svg viewBox="0 0 24 24">
-        <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
-        <line x1="3" y1="6" x2="21" y2="6"/>
-        <path d="M16 10a4 4 0 01-8 0"/>
-      </svg>
-      <div class="badge">2</div>
+    <div class="ai-info">
+      <div class="ai-name">AI Assistant</div>
+      <div class="ai-status">
+        <div class="status-dot"></div>
+        <span class="status-text">Online</span>
+      </div>
+    </div>
+    <div class="header-btn" onclick="clearChat()">
+      <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
     </div>
   </div>
 
-  <div class="heading">
-    <div class="r1">Featured</div>
-    <div class="r2">Products</div>
-  </div>
-
-  <div class="cat-row">
-    <div class="sliders-btn">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M3.99961 3H19.9997C20.552 3 20.9997 3.44764 20.9997 3.99987L20.9999 5.58569C21 5.85097 20.8946 6.10538 20.707 6.29295L14.2925 12.7071C14.105 12.8946 13.9996 13.149 13.9996 13.4142L13.9996 19.7192C13.9996 20.3698 13.3882 20.8472 12.7571 20.6894L10.7571 20.1894C10.3119 20.0781 9.99961 19.6781 9.99961 19.2192L9.99961 13.4142C9.99961 13.149 9.89425 12.8946 9.70672 12.7071L3.2925 6.29289C3.10496 6.10536 2.99961 5.851 2.99961 5.58579V4C2.99961 3.44772 3.44732 3 3.99961 3Z"/>
-      </svg>
-    </div>
-    <div class="cats">
-      <!-- gamepad -->
-      <div class="cat on" onclick="selCat(this)">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M17.5 17.5C20 21 23.9486 18.4151 23 15C21.5753 9.87113 20.8001 7.01556 20.3969 5.50793C20.1597 4.62136 19.3562 4 18.4384 4L5.56155 4C4.64382 4 3.844 4.62481 3.62085 5.515C2.7815 8.86349 2.0326 11.8016 1.14415 15C0.195501 18.4151 4.14415 21 6.64415 17.5"/>
-          <path d="M18 8.5L18.0111 8.51"/><path d="M16.49 7L16.5011 7.01"/><path d="M16.49 10L16.5011 10.01"/><path d="M15 8.5L15.0111 8.51"/>
-          <path d="M7 7V10"/><path d="M5.5 8.5H8.5"/>
-          <circle cx="8" cy="14" r="2"/><circle cx="16" cy="14" r="2"/>
-        </svg>
+  <!-- Messages -->
+  <div class="messages" id="messages">
+    <div class="empty" id="emptyState">
+      <div class="empty-icon">
+        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
       </div>
-      <!-- headphones -->
-      <div class="cat" onclick="selCat(this)">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M4 13.4998L3.51493 13.6211C2.62459 13.8437 2 14.6437 2 15.5614V17.4383C2 18.356 2.62459 19.156 3.51493 19.3786L5.25448 19.8135C5.63317 19.9081 6 19.6217 6 19.2314V13.7683C6 13.378 5.63317 13.0916 5.25448 13.1862L4 13.4998ZM4 13.4998V13C4 8.02944 7.58172 4 12 4C16.4183 4 20 8.02944 20 13V13.5M20 13.5L20.4851 13.6211C21.3754 13.8437 22 14.6437 22 15.5614V17.4383C22 18.356 21.3754 19.156 20.4851 19.3786L18.7455 19.8135C18.3668 19.9081 18 19.6217 18 19.2314V13.7683C18 13.378 18.3668 13.0916 18.7455 13.1862L20 13.5Z"/>
-        </svg>
-      </div>
-      <!-- monitor -->
-      <div class="cat" onclick="selCat(this);go()">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M22 21L2 21"/>
-          <path d="M8 15V5C8 3.89543 8.89543 3 10 3H14C15.1046 3 16 3.89543 16 5V15C16 16.1046 15.1046 17 14 17H10C8.89543 17 8 16.1046 8 15Z" stroke-linejoin="round"/>
-        </svg>
-      </div>
+      <h3>Start a conversation</h3>
+      <p>Ask anything or pick one of the suggestions below</p>
     </div>
   </div>
 
-  <div class="reel-wrap" style="position:relative;display:flex;flex-direction:column;padding:10px 0 0;">
-    <div class="hero-bg" style="position:absolute;right:-20px;top:-360px;z-index:-1;height:600px;width:55%">
-      <div class="hero-glow"></div>
-      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue','Righteous',sans-serif;font-size:160px;font-weight:900;color:rgba(255,255,255,0.10);letter-spacing:6px;user-select:none;transform:rotate(-90deg) translateY(40px);">STANDART</div>
+  <!-- Suggestions -->
+  <div class="suggestions" id="suggestions">
+    <div class="sg" onclick="suggest('Explain what a neural network is')">
+      <div class="sg-text">Explain neural networks</div>
     </div>
-    <!-- scrollable cards row -->
-    <div id="cards-row" style="display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:0 22px 10px;flex:1;align-items:center;" onscroll="updateDots(this)">
-      <!-- card 1 -->
-      <div class="pcard" onclick="go()" style="flex:0 0 auto;width:200px;height:calc(100% - 20px);max-height:280px;align-self:center;scroll-snap-align:start;background:linear-gradient(to bottom,#283140,#1b1d2a);border-radius:28px;border:1px solid rgba(255,255,255,0.08);display:flex;flex-direction:column;position:relative;z-index:1;overflow:visible;">
-        <div style="flex:1;display:flex;align-items:center;justify-content:center;position:relative;padding:14px 10px 70px;">
-          <div style="position:absolute;inset:0;overflow:hidden;border-radius:28px;background:radial-gradient(ellipse at 50% 45%,rgba(65,187,242,0.15) 0%,rgba(71,69,232,0.10) 50%,transparent 80%);pointer-events:none;">
-            <div style="position:absolute;width:140px;height:140px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.09);top:-50px;right:-40px;"></div>
-            <div style="position:absolute;width:90px;height:90px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.07);top:-10px;right:10px;"></div>
-            <div style="position:absolute;width:100px;height:100px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.06);bottom:-30px;left:-30px;"></div>
-            <div style="position:absolute;width:55px;height:55px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.05);bottom:10px;left:20px;"></div>
-          </div>
-          <img src="https://i.postimg.cc/R0GG5kKC/blobid4.png" style="width:100%;height:auto;max-height:98px;object-fit:contain;position:relative;z-index:1;filter:drop-shadow(0 10px 22px rgba(0,0,0,0.9));"/>
-        </div>
-        <div class="pcard-foot" style="position:absolute;bottom:0;left:0;right:0;">
-          <h3>DualSense</h3>
-          <p><b>Official PS5</b> controller</p>
-        </div>
-      </div>
-      <!-- card 2 -->
-      <div class="pcard" style="flex:0 0 auto;width:200px;height:calc(100% - 20px);max-height:280px;align-self:center;scroll-snap-align:start;background:rgba(255,255,255,0.07);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-radius:28px;border:1px solid rgba(255,255,255,0.18);display:flex;flex-direction:column;position:relative;z-index:1;overflow:visible;box-shadow:inset 0 1px 0 rgba(255,255,255,0.15),0 8px 32px rgba(0,0,0,0.3);">
-        <div style="flex:1;display:flex;align-items:flex-start;justify-content:center;position:relative;padding:0 10px 70px;">
-          <div style="position:absolute;inset:0;overflow:hidden;border-radius:28px;background:radial-gradient(ellipse at 50% 45%,rgba(255,255,255,0.08) 0%,transparent 70%);pointer-events:none;">
-            <div style="position:absolute;width:140px;height:140px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.09);top:-50px;right:-40px;"></div>
-            <div style="position:absolute;width:90px;height:90px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.07);top:-10px;right:10px;"></div>
-            <div style="position:absolute;width:100px;height:100px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.06);bottom:-30px;left:-30px;"></div>
-            <div style="position:absolute;width:55px;height:55px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.05);bottom:10px;left:20px;"></div>
-          </div>
-          <div style="position:absolute;width:110px;height:110px;border-radius:50%;background:rgba(0,0,0,0.6);filter:blur(22px);z-index:0;pointer-events:none;"></div>
-          <img src="https://i.postimg.cc/hjTYFyDX/4c4d42ce-e81b-4261-9881-78a754f00f4f.png" style="width:auto;height:185px;max-width:100%;object-fit:contain;position:relative;z-index:1;filter:drop-shadow(0 10px 22px rgba(0,0,0,0.9));transform:scale(1.18) translateY(-15px);transform-origin:center center;"/>
-        </div>
-        <div class="pcard-foot" style="position:absolute;bottom:0;left:0;right:0;">
-          <h3>DualSense</h3>
-          <p><b>Edge PS5</b> controller</p>
-        </div>
-      </div>
+    <div class="sg" onclick="suggest('Write bubble sort in Python')">
+      <div class="sg-text">Python code example</div>
     </div>
-    <!-- scroll indicator -->
-    <div style="display:flex;justify-content:center;align-items:center;gap:6px;padding:4px 0 10px;">
-      <div id="dot0" style="width:22px;height:4px;border-radius:2px;background:rgba(255,255,255,0.9);transition:all .3s;"></div>
-      <div id="dot1" style="width:6px;height:4px;border-radius:2px;background:rgba(255,255,255,0.3);transition:all .3s;"></div>
+    <div class="sg" onclick="suggest('Give me 5 startup ideas')">
+      <div class="sg-text">Startup ideas</div>
+    </div>
+    <div class="sg" onclick="suggest('Translate to English: Dobryy den')">
+      <div class="sg-text">Translate text</div>
     </div>
   </div>
 
-  <div class="bnav">
-    <div class="nbtn on">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M19.5 22C20.3284 22 21 21.3284 21 20.5C21 19.6716 20.3284 19 19.5 19C18.6716 19 18 19.6716 18 20.5C18 21.3284 18.6716 22 19.5 22Z" fill="currentColor"/>
-        <path d="M9.5 22C10.3284 22 11 21.3284 11 20.5C11 19.6716 10.3284 19 9.5 19C8.67157 19 8 19.6716 8 20.5C8 21.3284 8.67157 22 9.5 22Z" fill="currentColor"/>
-        <path d="M5 4H22L20 15H7L5 4ZM5 4C4.83333 3.33333 4 2 2 2"/>
-        <path d="M20 15H7H5.23077C3.44646 15 2.5 15.7812 2.5 17C2.5 18.2188 3.44646 19 5.23077 19H19.5"/>
-      </svg>
-      <div class="nlabel">Shop</div>
-    </div>
-    <div class="nbtn">
-      <svg viewBox="0 0 24 24">
-        <circle cx="12" cy="8" r="4"/>
-        <path d="M4 20c0-4 3.58-7 8-7s8 3 8 7"/>
-      </svg>
-    </div>
-    <div class="nbtn">
-      <svg viewBox="0 0 24 24">
-        <circle cx="12" cy="12" r="3"/>
-        <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
-      </svg>
-    </div>
-    <div class="nbtn">
-      <svg viewBox="0 0 24 24">
-        <path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/>
-      </svg>
+  <!-- Input -->
+  <div class="input-area">
+    <div class="input-row">
+      <textarea
+        id="input"
+        placeholder="Write a message..."
+        oninput="onInput()"
+        onkeydown="onKey(event)"
+      ></textarea>
+      <button class="send-btn" id="sendBtn" onclick="send()" disabled>
+        <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
     </div>
   </div>
+
 </div>
-
-
-<!-- ══════════ DETAIL ══════════ -->
-<div class="screen" id="detail">
-
-  <div class="dheader">
-    <div class="dtopbar">
-      <div class="back" onclick="back()">
-        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-      </div>
-      <div class="dcart">
-        <svg viewBox="0 0 24 24">
-          <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
-          <line x1="3" y1="6" x2="21" y2="6"/>
-          <path d="M16 10a4 4 0 01-8 0"/>
-        </svg>
-        <div class="badge">2</div>
-      </div>
-    </div>
-
-    <div class="dcontent">
-      <div class="dspecs">
-        <div>
-          <div class="spc-lbl">Platform</div>
-          <div class="spc-val">PS5</div>
-        </div>
-        <div>
-          <div class="spc-lbl">Release</div>
-          <div class="spc-val">Fall 2020</div>
-        </div>
-        <div>
-          <div class="spc-lbl">Price</div>
-          <div class="spc-val">$50</div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <div class="dscroll">
-    <div class="dtitle-row">
-      <div class="dtitle">Dual Sense</div>
-      <div class="bkmark">
-        <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
-      </div>
-    </div>
-    <p class="ddesc">DualSense also adds a built-in microphone array, which will enable players to easily chat with friends without a headset...</p>
-
-    <div class="feats">
-      <div class="feat">
-        <div class="ficon fi1">
-          <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-        </div>
-        <div><div class="fn">Futuristic</div><div class="fs">Design</div></div>
-      </div>
-      <div class="feat">
-        <div class="ficon fi2">
-          <svg viewBox="0 0 24 24">
-            <path d="M12 1a3 3 0 013 3v8a3 3 0 01-6 0V4a3 3 0 013-3z"/>
-            <path d="M19 10v2a7 7 0 01-14 0v-2"/>
-            <line x1="12" y1="19" x2="12" y2="23"/>
-            <line x1="8" y1="23" x2="16" y2="23"/>
-          </svg>
-        </div>
-        <div><div class="fn">Built-in</div><div class="fs">Microphone</div></div>
-      </div>
-      <div class="feat">
-        <div class="ficon fi3">
-          <svg viewBox="0 0 24 24">
-            <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
-          </svg>
-        </div>
-        <div><div class="fn">Haptic</div><div class="fs">Feedback</div></div>
-      </div>
-      <div class="feat">
-        <div class="ficon fi4">
-          <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-        </div>
-        <div><div class="fn">Fast charge</div><div class="fs">USB-C port</div></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="buybar">
-    <div class="pricebox">
-      <div class="psym">$</div>
-      <div class="pnum">50</div>
-    </div>
-    <div class="preorder">
-      <span>Preorder</span>
-      <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-    </div>
-  </div>
-</div>
-
-</div><!-- /app -->
 
 <script>
-function updateDots(el){
-  const idx=Math.round(el.scrollLeft/(el.scrollWidth/2));
-  document.getElementById('dot0').style.width=idx===0?'22px':'6px';
-  document.getElementById('dot0').style.background=idx===0?'rgba(255,255,255,0.9)':'rgba(255,255,255,0.3)';
-  document.getElementById('dot1').style.width=idx===1?'22px':'6px';
-  document.getElementById('dot1').style.background=idx===1?'rgba(255,255,255,0.9)':'rgba(255,255,255,0.3)';
+const tg = window.Telegram?.WebApp;
+if(tg){tg.ready();tg.expand();}
+
+let busy = false;
+const messagesEl = document.getElementById('messages');
+const inputEl    = document.getElementById('input');
+const sendBtnEl  = document.getElementById('sendBtn');
+const emptyEl    = document.getElementById('emptyState');
+const suggestEl  = document.getElementById('suggestions');
+
+function time(){
+  const d = new Date();
+  return d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
 }
-function selCat(el){
-  document.querySelectorAll('.cat').forEach(c=>c.classList.remove('on'));
-  el.classList.add('on');
+
+function hideEmpty(){
+  if(!emptyEl) return;
+  emptyEl.style.display = 'none';
+  suggestEl.style.display = 'none';
 }
-function go(){
-  document.getElementById('home').classList.add('away');
-  document.getElementById('detail').classList.add('open');
-  document.getElementById('detail').querySelector('.dscroll').scrollTop=0;
+
+function scroll(){
+  setTimeout(() => messagesEl.scrollTop = messagesEl.scrollHeight, 40);
 }
-function back(){
-  document.getElementById('detail').classList.remove('open');
-  document.getElementById('home').classList.remove('away');
+
+function appendMsg(role, text){
+  const row = document.createElement('div');
+  row.className = 'msg-row ' + (role === 'user' ? 'user' : 'ai');
+  const col = document.createElement('div');
+  col.className = 'msg-col';
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble ' + (role === 'user' ? 'user' : 'ai');
+  bubble.textContent = text;
+  const t = document.createElement('div');
+  t.className = 'msg-time';
+  t.textContent = time();
+  col.appendChild(bubble);
+  col.appendChild(t);
+  row.appendChild(col);
+  messagesEl.appendChild(row);
+  scroll();
+}
+
+function showTyping(){
+  const row = document.createElement('div');
+  row.className = 'typing-row'; row.id = 'typing';
+  const b = document.createElement('div'); b.className = 'typing-bubble';
+  for(let i = 0; i < 3; i++){const d = document.createElement('div'); d.className = 'td'; b.appendChild(d);}
+  row.appendChild(b);
+  messagesEl.appendChild(row);
+  scroll();
+}
+function hideTyping(){const r = document.getElementById('typing'); if(r) r.remove();}
+
+const replies = [
+  t => /neural|network|ai|intelligence/i.test(t) &&
+    'A neural network is a mathematical model inspired by the brain. It consists of layers of nodes (neurons) that receive inputs, multiply them by weights, and pass the result forward. During training the weights are adjusted to minimize prediction error.',
+  t => /python|code|sort|bubble/i.test(t) &&
+    'def bubble_sort(arr):\n    n = len(arr)\n    for i in range(n):\n        for j in range(0, n-i-1):\n            if arr[j] > arr[j+1]:\n                arr[j], arr[j+1] = arr[j+1], arr[j]\n    return arr\n\nExample: bubble_sort([64, 34, 25]) returns [25, 34, 64].',
+  t => /translat|english|dobr/i.test(t) &&
+    '"Dobryy den" translates to "Good afternoon" or simply "Hello". Want to translate something else?',
+  t => /startup|idea/i.test(t) &&
+    '5 startup ideas:\n\n1. AI assistant for freelancers to automate routine tasks\n2. Anonymous mentorship platform for developers\n3. Health monitoring service via wearables\n4. Local services marketplace with AI matching\n5. A/B content testing and generation tool',
+];
+
+function getReply(text){
+  for(const fn of replies){const r = fn(text); if(r) return r;}
+  const g = [
+    'Understood. Let me think through that in more detail — where would you like to start?',
+    'Good question. It depends on the context. Could you clarify the conditions?',
+    'There are a few approaches here. Are you more interested in theory or practical application?',
+    'Got it. I can give you a detailed or a short answer — which do you prefer?',
+    'Interesting question. To give a precise answer, what exactly do you need as output?',
+  ];
+  return g[Math.floor(Math.random() * g.length)];
+}
+
+async function send(){
+  const text = inputEl.value.trim();
+  if(!text || busy) return;
+  busy = true;
+  hideEmpty();
+  appendMsg('user', text);
+  inputEl.value = '';
+  inputEl.style.height = '20px';
+  sendBtnEl.disabled = true;
+  showTyping();
+  await new Promise(r => setTimeout(r, 700 + Math.random() * 800));
+  hideTyping();
+  appendMsg('ai', getReply(text));
+  busy = false;
+  toggleSend();
+  tg?.HapticFeedback?.impactOccurred('light');
+}
+
+function suggest(text){
+  inputEl.value = text;
+  onInput();
+  send();
+}
+
+function onInput(){
+  inputEl.style.height = '20px';
+  inputEl.style.height = Math.min(inputEl.scrollHeight, 100) + 'px';
+  toggleSend();
+}
+
+function toggleSend(){
+  sendBtnEl.disabled = !inputEl.value.trim() || busy;
+}
+
+function onKey(e){
+  if(e.key === 'Enter' && !e.shiftKey){e.preventDefault(); if(!sendBtnEl.disabled) send();}
+}
+
+function clearChat(){
+  messagesEl.querySelectorAll('.msg-row,.typing-row').forEach(r => r.remove());
+  emptyEl.style.display = '';
+  suggestEl.style.display = '';
+  busy = false;
+  toggleSend();
+  tg?.HapticFeedback?.impactOccurred('medium');
 }
 </script>
 </body>
