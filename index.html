@@ -218,9 +218,7 @@ const replyFns=[
 ];
 const delays={normal:400,smart:800,best:1400};
 function getReply(text){
-  for(const fn of replyFns){const r=fn(text);if(r)return r;}
-  const g=['Understood. Where would you like to start?','Good question — depends on context. Could you clarify?','A few approaches apply. Theory or practice?','Got it. Short or detailed answer?','Interesting. What do you need as output?'];
-  return g[Math.floor(Math.random()*g.length)];
+  return 'This is package basic, buy it soon and enjoy working!';
 }
 
 async function send(){
