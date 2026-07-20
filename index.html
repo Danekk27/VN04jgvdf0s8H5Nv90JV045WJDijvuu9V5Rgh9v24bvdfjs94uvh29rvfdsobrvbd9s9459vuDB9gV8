@@ -93,37 +93,35 @@
         /* ─── Card Stack ─── */
         .card-wrapper {
             position: relative;
-            padding-top: 56px;
-            margin-bottom: 30px;
+            margin-bottom: 132px;
         }
 
         .card-back {
             position: absolute;
-            top: 0;
-            left: 14px;
-            right: -14px;
+            bottom: -58px;
+            left: 15px;
+            right: -28px;
             background: #111220;
             border-radius: 22px;
             z-index: 1;
             overflow: hidden;
-            height: 88px;
+            height: 240px;
             display: flex;
             flex-direction: column;
         }
 
         .card-back-stripe {
-            height: 32px;
+            height: 34px;
             background: #0a0b14;
-            flex-shrink: 0;
         }
 
         .card-back-cvv-row {
-            flex: 1;
             display: flex;
             align-items: center;
             justify-content: flex-end;
-            padding: 0 18px;
+            padding: 14px 18px;
             gap: 12px;
+            margin-top: auto;
         }
 
         .cvv-info { text-align: right; }
@@ -149,7 +147,7 @@
             border-radius: 22px;
             padding: 18px 20px 20px;
             margin-bottom: 0;
-            margin-left: 8px;
+            margin-right: -12px;
             position: relative;
             z-index: 2;
             overflow: hidden;
@@ -447,6 +445,7 @@
 
             <!-- Back of card (CVV) -->
             <div class="card-back">
+                <div class="card-back-stripe"></div>
                 <div class="card-back-cvv-row">
                     <div class="cvv-info">
                         <div class="cvv-label">CVV</div>
@@ -459,7 +458,6 @@
                         </svg>
                     </button>
                 </div>
-                <div class="card-back-stripe"></div>
             </div>
 
             <!-- Front of card -->
