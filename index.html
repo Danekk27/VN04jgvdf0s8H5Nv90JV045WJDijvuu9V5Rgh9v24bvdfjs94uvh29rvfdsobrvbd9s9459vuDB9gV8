@@ -31,13 +31,20 @@
 
         /* ─── BOTTOM NAV ───────────────────────── */
         .bottom-nav {
-            background: #1b1c2d;
-            height: 66px;
             display: flex;
             align-items: center;
-            justify-content: space-around;
+            justify-content: center;
+            gap: 4px;
             flex-shrink: 0;
-            padding-bottom: env(safe-area-inset-bottom, 0px);
+            align-self: center;
+            background: rgba(18, 16, 36, 0.92);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255,255,255,.09);
+            box-shadow: 0 10px 36px rgba(0,0,0,.5), 0 2px 8px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.06);
+            border-radius: 32px;
+            padding: 8px 18px;
+            margin: 0 auto 20px;
         }
 
         .nav-btn {
@@ -83,15 +90,109 @@
             user-select: none;
         }
 
+        /* ─── Card Stack ─── */
+        .card-wrapper {
+            position: relative;
+            padding-top: 56px;
+            margin-bottom: 30px;
+        }
+
+        .card-back {
+            position: absolute;
+            top: 0;
+            left: 14px;
+            right: -14px;
+            background: #111220;
+            border-radius: 22px;
+            z-index: 1;
+            overflow: hidden;
+            height: 88px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-back-stripe {
+            height: 32px;
+            background: #0a0b14;
+            flex-shrink: 0;
+        }
+
+        .card-back-cvv-row {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 0 18px;
+            gap: 12px;
+        }
+
+        .cvv-info { text-align: right; }
+
+        .cvv-label {
+            font-size: 8.5px;
+            color: rgba(255,255,255,.25);
+            letter-spacing: .4px;
+            text-transform: uppercase;
+            margin-bottom: 2px;
+        }
+
+        .cvv-value {
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 3px;
+            color: rgba(255,255,255,.6);
+        }
+
         /* ─── Credit Card ─── */
         .credit-card {
             background: #1b1c2d;
             border-radius: 22px;
             padding: 18px 20px 20px;
-            margin-bottom: 30px;
+            margin-bottom: 0;
+            margin-left: 8px;
             position: relative;
+            z-index: 2;
             overflow: hidden;
             min-height: 158px;
+        }
+
+        /* ─── Card number row ─── */
+        .card-number-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-number {
+            font-size: 13px;
+            font-weight: 400;
+            letter-spacing: 2.5px;
+            color: rgba(255,255,255,.58);
+        }
+
+        /* ─── Copy button ─── */
+        .copy-btn {
+            background: rgba(255,255,255,.08);
+            border: 1px solid rgba(255,255,255,.1);
+            border-radius: 8px;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: rgba(255,255,255,.4);
+            transition: all .18s;
+            flex-shrink: 0;
+        }
+        .copy-btn:active { transform: scale(.88); }
+        .copy-btn.copied {
+            background: rgba(74,197,119,.18);
+            border-color: rgba(74,197,119,.35);
+            color: #4ac577;
         }
 
         .card-pattern {
@@ -341,37 +442,69 @@
             <div class="add-btn">+</div>
         </div>
 
-        <!-- Credit Card -->
-        <div class="credit-card">
-            <!-- Topographic lines emanating from right -->
-            <svg class="card-pattern" viewBox="0 0 260 158" preserveAspectRatio="xMaxYMid slice">
-                <g fill="none" stroke="white" stroke-linecap="round">
-                    <path d="M295 -28 Q252 18 260 79 Q268 142 222 178" stroke-width="38" opacity=".085"/>
-                    <path d="M268 -36 Q224 12 232 79 Q240 148 190 184" stroke-width="33" opacity=".075"/>
-                    <path d="M242 -44 Q196 6 204 79 Q212 154 158 188" stroke-width="28" opacity=".065"/>
-                    <path d="M216 -52 Q168 0 176 79 Q184 160 126 192" stroke-width="23" opacity=".055"/>
-                    <path d="M190 -60 Q140 -6 148 79 Q156 166 94 196" stroke-width="18" opacity=".045"/>
-                    <path d="M164 -68 Q112 -12 120 79 Q128 172 62 200" stroke-width="14" opacity=".035"/>
-                </g>
-            </svg>
+        <!-- Credit Card Stack -->
+        <div class="card-wrapper">
 
-            <div class="card-row-top">
-                <div class="card-left">
-                    <div class="eur-badge">€</div>
-                    <span class="card-ccy">EUR</span>
+            <!-- Back of card (CVV) -->
+            <div class="card-back">
+                <div class="card-back-cvv-row">
+                    <div class="cvv-info">
+                        <div class="cvv-label">CVV</div>
+                        <div class="cvv-value">• • •</div>
+                    </div>
+                    <button class="copy-btn" onclick="copyText('123', this)" title="Copy CVV">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="9" y="9" width="13" height="13" rx="2"/>
+                            <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                        </svg>
+                    </button>
                 </div>
-                <span class="card-last4">• 5806</span>
+                <div class="card-back-stripe"></div>
             </div>
 
-            <div class="card-balance">1855.00</div>
+            <!-- Front of card -->
+            <div class="credit-card">
+                <!-- Topographic lines emanating from right -->
+                <svg class="card-pattern" viewBox="0 0 260 158" preserveAspectRatio="xMaxYMid slice">
+                    <g fill="none" stroke="white" stroke-linecap="round">
+                        <path d="M295 -28 Q252 18 260 79 Q268 142 222 178" stroke-width="38" opacity=".085"/>
+                        <path d="M268 -36 Q224 12 232 79 Q240 148 190 184" stroke-width="33" opacity=".075"/>
+                        <path d="M242 -44 Q196 6 204 79 Q212 154 158 188" stroke-width="28" opacity=".065"/>
+                        <path d="M216 -52 Q168 0 176 79 Q184 160 126 192" stroke-width="23" opacity=".055"/>
+                        <path d="M190 -60 Q140 -6 148 79 Q156 166 94 196" stroke-width="18" opacity=".045"/>
+                        <path d="M164 -68 Q112 -12 120 79 Q128 172 62 200" stroke-width="14" opacity=".035"/>
+                    </g>
+                </svg>
 
-            <div class="card-row-bottom">
-                <div>
-                    <div class="holder-label">Holder</div>
-                    <div class="holder-name">Shane Cooper</div>
+                <div class="card-row-top">
+                    <div class="card-left">
+                        <div class="eur-badge">€</div>
+                        <span class="card-ccy">EUR</span>
+                    </div>
+                    <span class="card-last4">• 5806</span>
                 </div>
-                <div class="visa-logo">VISA</div>
+
+                <div class="card-number-row">
+                    <span class="card-number">4532 1234 5678 5806</span>
+                    <button class="copy-btn" onclick="copyText('4532123456785806', this)" title="Copy card number">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="9" y="9" width="13" height="13" rx="2"/>
+                            <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="card-balance">1855.00</div>
+
+                <div class="card-row-bottom">
+                    <div>
+                        <div class="holder-label">Holder</div>
+                        <div class="holder-name">Shane Cooper</div>
+                    </div>
+                    <div class="visa-logo">VISA</div>
+                </div>
             </div>
+
         </div>
 
         <!-- Transactions -->
@@ -609,6 +742,15 @@
     if (window.Telegram && window.Telegram.WebApp) {
         Telegram.WebApp.ready();
         Telegram.WebApp.expand();
+    }
+
+    function copyText(text, btn) {
+        navigator.clipboard.writeText(text).then(function() {
+            var prev = btn.innerHTML;
+            btn.classList.add('copied');
+            btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+            setTimeout(function() { btn.classList.remove('copied'); btn.innerHTML = prev; }, 1600);
+        });
     }
 
     function goTo(screen) {
