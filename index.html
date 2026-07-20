@@ -37,13 +37,13 @@
             gap: 4px;
             flex-shrink: 0;
             align-self: center;
-            background: rgba(18, 16, 36, 0.92);
+            background: rgba(30, 30, 32, 0.95);
             backdrop-filter: blur(24px);
             -webkit-backdrop-filter: blur(24px);
             border: 1px solid rgba(255,255,255,.09);
             box-shadow: 0 10px 36px rgba(0,0,0,.5), 0 2px 8px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.06);
-            border-radius: 32px;
-            padding: 8px 18px;
+            border-radius: 20px;
+            padding: 8px 64px;
             margin: 0 auto 20px;
         }
 
@@ -98,14 +98,14 @@
 
         .card-back {
             position: absolute;
-            bottom: -58px;
+            bottom: -20px;
             left: 15px;
             right: -28px;
             background: #111220;
             border-radius: 22px;
             z-index: 1;
             overflow: hidden;
-            height: 240px;
+            height: 180px;
             display: flex;
             flex-direction: column;
         }
@@ -122,6 +122,27 @@
             padding: 14px 18px;
             gap: 12px;
             margin-top: auto;
+        }
+
+        .card-back-date {
+            display: flex;
+            flex-direction: column;
+            padding: 12px 20px;
+            margin-top: auto;
+        }
+
+        .card-back-date-label {
+            font-size: 7.5px;
+            color: rgba(255,255,255,.25);
+            letter-spacing: .5px;
+            margin-bottom: 3px;
+        }
+
+        .card-back-date-value {
+            font-size: 15px;
+            font-weight: 500;
+            letter-spacing: 1.5px;
+            color: rgba(255,255,255,.65);
         }
 
         .cvv-info { text-align: right; }
@@ -446,18 +467,6 @@
             <!-- Back of card (CVV) -->
             <div class="card-back">
                 <div class="card-back-stripe"></div>
-                <div class="card-back-cvv-row">
-                    <div class="cvv-info">
-                        <div class="cvv-label">CVV</div>
-                        <div class="cvv-value">• • •</div>
-                    </div>
-                    <button class="copy-btn" onclick="copyText('123', this)" title="Copy CVV">
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="9" y="9" width="13" height="13" rx="2"/>
-                            <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
-                        </svg>
-                    </button>
-                </div>
             </div>
 
             <!-- Front of card -->
@@ -483,7 +492,7 @@
                 </div>
 
                 <div class="card-number-row">
-                    <span class="card-number">4532 1234 5678 5806</span>
+                    <span class="card-number">•••• •••• •••• 5806</span>
                     <button class="copy-btn" onclick="copyText('4532123456785806', this)" title="Copy card number">
                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <rect x="9" y="9" width="13" height="13" rx="2"/>
@@ -498,6 +507,10 @@
                     <div>
                         <div class="holder-label">Holder</div>
                         <div class="holder-name">Shane Cooper</div>
+                    </div>
+                    <div>
+                        <div class="holder-label">VALID THRU</div>
+                        <div class="holder-name">08/28</div>
                     </div>
                     <div class="visa-logo">VISA</div>
                 </div>
