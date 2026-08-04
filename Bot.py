@@ -1,6 +1,6 @@
 import asyncio
 import logging
-from aiogram import Bot, Dispatcher, F
+from aiogram import Bot, Dispatcher
 from aiogram.filters import CommandStart
 from aiogram.types import (
     Message,
@@ -8,69 +8,62 @@ from aiogram.types import (
     InlineKeyboardButton,
     WebAppInfo
 )
-TOKEN = "8887727104:AAF-WkVY-WdMglICBKftM5TtnmDCCgu0xK8
 
-# Инициализация бота и диспетчера
+TOKEN = "8887727104:AAF-WkVY-WdMglICBKftM5TtnmDCCgu0xK8"
+
+SITE_URL = "https://danekk27.github.io/VN04jgvdf0s8H5Nv90JV045WJDijvuu9V5Rgh9v24bvdfjs94uvh29rvfdsobrvbd9s9459vuDB9gV8/"
+
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
-# Обработчик команды /start
 @dp.message(CommandStart())
 async def cmd_start(message: Message):
-    # Текст сообщения (использует HTML-разметку или Markdown)
     text = (
-        "✈️ <b>Добро пожаловать на борт</b> — №1 лицензированная платформа с 15 000+ играми и спортом прямо в мессенджере!\n\n"
+        "🎰 <b>Лицензированная платформа с 15 000+ играми и спортом прямо в мессенджере!</b>\n\n"
         "Забирай:\n"
         "🎁 <b>До 425%+250FS</b> в играх или до $1600 фрибетами в спорте.\n"
-        "🎁 <b>Бездепозитный бонус</b> в Турбине.\n"
-        "Удачи новым игрокам.\n"
+        "🎁 <b>Бездепозитный бонус</b> в Турбине Удачи новым игрокам.\n"
         "💸 <b>Cashback до 10%</b> без вейджера.\n"
         "💸 <b>Депозитный бонус +5%</b> ежедневно.\n\n"
-        "Всегда актуальное зеркало 👉 @your_channel"
+        "Всегда актуальное зеркало 👉 @jetton"
     )
 
-    # Создание кнопок под сообщением
     keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
             [
-                # Кнопка, открывающая Web App (мини-приложение внутри телеграма)
                 InlineKeyboardButton(
-                    text="Играть в боте", 
-                    web_app=WebAppInfo(url="https://your-website.com") 
+                    text="🎮 Играть в боте",
+                    web_app=WebAppInfo(url=SITE_URL)
                 )
             ],
             [
-                # Обычная кнопка-ссылка на сайт
                 InlineKeyboardButton(
-                    text="Играть на сайте", 
-                    url="https://your-website.com" 
+                    text="🌐 Играть на сайте",
+                    url=SITE_URL
                 )
             ],
             [
-                # Кнопка-ссылка на сообщество/канал
                 InlineKeyboardButton(
-                    text="Сообщество", 
-                    url="https://t.me/your_channel" 
+                    text="👥 Сообщество",
+                    url=SITE_URL
                 )
             ]
         ]
     )
 
-    # Ссылка на картинку (можно заменить на прямую ссылку в интернете)
-    photo_url = "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1000&auto=format&fit=crop"
-    
-    # Отправка фото с текстом и кнопками
+    # Замени на ссылку своей картинки после загрузки в репозиторий
+    photo_url = "https://danekk27.github.io/VN04jgvdf0s8H5Nv90JV045WJDijvuu9V5Rgh9v24bvdfjs94uvh29rvfdsobrvbd9s9459vuDB9gV8/banner.jpg"
+
     await message.answer_photo(
         photo=photo_url,
         caption=text,
-        parse_mode="HTML", # Режим разметки (вместо Markdown лучше использовать HTML для надежности)
+        parse_mode="HTML",
         reply_markup=keyboard
     )
 
-# Главная функция для запуска бота
 async def main():
     logging.basicConfig(level=logging.INFO)
-    print("Бот запущен и ожидает сообщения...")
+    print("Бот запущен...")
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
