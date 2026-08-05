@@ -53,6 +53,31 @@
             color: rgba(255,255,255,0.18);
         }
 
+        .balance-badge {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 5px 12px 5px 10px;
+            z-index: 100;
+        }
+
+        .balance-badge span {
+            font-size: 13px;
+            font-weight: 600;
+            color: #fff;
+            letter-spacing: 0.2px;
+        }
+
+        .balance-badge .star {
+            font-size: 14px;
+        }
+
         /* Nav island */
         .nav-island {
             position: fixed;
@@ -165,6 +190,11 @@
     </style>
 </head>
 <body>
+
+    <div class="balance-badge">
+        <span class="star">⭐</span>
+        <span>499</span>
+    </div>
 
     <div class="pages-wrapper">
         <div class="page active" id="page-home"><h2>Главная</h2></div>
