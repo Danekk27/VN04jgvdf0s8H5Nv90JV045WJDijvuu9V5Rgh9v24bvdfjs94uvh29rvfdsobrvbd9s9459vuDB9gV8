@@ -71,8 +71,8 @@
 
         @keyframes blurPulse {
             0%   { filter: blur(0px); }
-            35%  { filter: blur(2px); }
-            65%  { filter: blur(2px); }
+            40%  { filter: blur(2px); }
+            60%  { filter: blur(2px); }
             100% { filter: blur(0px); }
         }
 
@@ -83,14 +83,14 @@
             border-radius: 22px;
             pointer-events: none;
             z-index: 0;
-            transition: left 1.1s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-                        top 1.1s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-                        width 1.1s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-                        height 1.1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: left 0.38s cubic-bezier(0.4, 0, 0.2, 1),
+                        top 0.38s cubic-bezier(0.4, 0, 0.2, 1),
+                        width 0.38s cubic-bezier(0.4, 0, 0.2, 1),
+                        height 0.38s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .nav-indicator.moving {
-            animation: blurPulse 1.1s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+            animation: blurPulse 0.38s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
 
         .nav-item {
@@ -213,7 +213,7 @@
             void indicator.offsetWidth;
             indicator.classList.add('moving');
             clearTimeout(indicator._t);
-            indicator._t = setTimeout(() => indicator.classList.remove('moving'), 1100);
+            indicator._t = setTimeout(() => indicator.classList.remove('moving'), 380);
         }
 
         function switchPage(page, el) {
