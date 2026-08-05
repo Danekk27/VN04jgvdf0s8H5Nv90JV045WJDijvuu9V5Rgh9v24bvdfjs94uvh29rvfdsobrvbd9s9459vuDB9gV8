@@ -1,985 +1,197 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Wallet</title>
+    <title>TonDrop</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@100;200&display=swap" rel="stylesheet">
     <style>
         * {
-            margin: 0; padding: 0;
+            margin: 0;
+            padding: 0;
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
+            user-select: none;
         }
 
         body {
+            background: #18181c;
+            color: #fff;
             font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
-            background: linear-gradient(180deg, #1f2229 0%, #16181c 100%) fixed;
-            color: #fff;
             height: 100dvh;
-            height: 100vh;
             overflow: hidden;
         }
 
-        .screen {
-            display: none;
-            height: 100dvh;
-            height: 100vh;
-            flex-direction: column;
-        }
-        .screen.active { display: flex; }
-
-        /* ─── BOTTOM NAV ───────────────────────── */
-        .bottom-nav {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 4px;
-            flex-shrink: 0;
-            align-self: center;
-            background: rgba(30, 30, 32, 0.95);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid rgba(255,255,255,.09);
-            box-shadow: 0 10px 36px rgba(0,0,0,.5), 0 2px 8px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.06), 0 0 70px 35px rgba(15,15,17,0.65);
-            border-radius: 20px;
-            padding: 8px 64px;
-            margin: 0 auto 20px;
-            position: relative;
-        }
-
-
-        .nav-btn {
-            width: 52px;
-            height: 52px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            border-radius: 14px;
-        }
-        .nav-btn svg { opacity: 0.3; transition: opacity .2s; }
-        .nav-btn.active svg { opacity: 1; }
-
-        /* ─── SCREEN 1 — WALLET ────────────────── */
-        .wallet-scroll {
-            flex: 1;
-            overflow-y: auto;
-            overflow-x: hidden;
-            padding: 30px 22px 10px;
-            -webkit-overflow-scrolling: touch;
-        }
-        .wallet-scroll::-webkit-scrollbar { display: none; }
-
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-        }
-
-        .page-title {
-            font-size: 22px;
-            font-weight: 700;
-            letter-spacing: .2px;
-        }
-
-        .add-btn {
-            font-size: 24px;
-            color: rgba(255,255,255,.6);
-            line-height: 1;
-            cursor: pointer;
-            user-select: none;
-        }
-
-        /* ─── Card Stack ─── */
-        .card-wrapper {
-            position: relative;
-            margin-bottom: 48px;
-            transform: translateX(-8px);
-        }
-
-        .card-back {
+        /* Pages */
+        .page {
             position: absolute;
-            bottom: -20px;
-            left: 10px;
-            right: -14px;
-            background: linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)), linear-gradient(135deg, #1cb5e0 0%, #43c6ac 35%, #f7c59f 70%, #f9d423 100%);
-            border-radius: 22px;
-            z-index: 1;
-            overflow: hidden;
-            height: 180px;
+            inset: 0;
+            bottom: 90px;
             display: flex;
             flex-direction: column;
-        }
-
-        .card-back-stripe {
-            height: 34px;
-            background: rgba(0,0,0,0.03);
-        }
-
-        .card-back-cvv-row {
-            display: flex;
             align-items: center;
-            justify-content: flex-end;
-            padding: 14px 18px;
+            justify-content: center;
+            opacity: 0;
+            transform: translateY(12px) scale(0.98);
+            transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                        transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
             gap: 12px;
-            margin-top: auto;
         }
 
-        .card-back-date {
+        .page.active {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: all;
+        }
+
+        .page h2 {
+            font-size: 22px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.2);
+            letter-spacing: 0.5px;
+        }
+
+        /* Nav island */
+        .nav-island {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #242429;
+            border-radius: 32px;
+            padding: 10px 12px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05);
+        }
+
+        .nav-item {
             display: flex;
             flex-direction: column;
-            padding: 12px 20px;
-            margin-top: auto;
-        }
-
-        .card-back-date-label {
-            font-size: 7.5px;
-            color: rgba(255,255,255,.25);
-            letter-spacing: .5px;
-            margin-bottom: 3px;
-        }
-
-        .card-back-date-value {
-            font-size: 15px;
-            font-weight: 500;
-            letter-spacing: 1.5px;
-            color: rgba(255,255,255,.65);
-        }
-
-        .cvv-info { text-align: right; }
-
-        .cvv-label {
-            font-size: 8.5px;
-            color: rgba(255,255,255,.25);
-            letter-spacing: .4px;
-            text-transform: uppercase;
-            margin-bottom: 2px;
-        }
-
-        .cvv-value {
-            font-size: 13px;
-            font-weight: 500;
-            letter-spacing: 3px;
-            color: rgba(255,255,255,.6);
-        }
-
-        /* ─── Credit Card ─── */
-        .credit-card {
-            background: linear-gradient(135deg, #1cb5e0 0%, #43c6ac 35%, #f7c59f 70%, #f9d423 100%);
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            padding: 9px 14px;
             border-radius: 22px;
-            padding: 18px 20px 20px;
-            margin-bottom: 0;
-            margin-right: 0;
-            position: relative;
-            z-index: 2;
-            overflow: hidden;
-            min-height: 158px;
-        }
-
-        /* ─── Card number row ─── */
-        .card-number-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .card-number {
-            font-size: 13px;
-            font-weight: 400;
-            letter-spacing: 2.5px;
-            color: rgba(255,255,255,.58);
-        }
-
-        /* ─── Copy button ─── */
-        .copy-btn {
-            background: rgba(255,255,255,.08);
-            border: 1px solid rgba(255,255,255,.1);
-            border-radius: 8px;
-            width: 28px;
-            height: 28px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             cursor: pointer;
-            color: rgba(255,255,255,.4);
-            transition: all .18s;
-            flex-shrink: 0;
-        }
-        .copy-btn:active { transform: scale(.88); }
-        .copy-btn.copied {
-            background: rgba(74,197,119,.18);
-            border-color: rgba(74,197,119,.35);
-            color: #4ac577;
-        }
-
-        .card-pattern {
-            position: absolute;
-            top: 0; right: 0;
-            height: 100%;
-            width: 80%;
-            pointer-events: none;
-        }
-
-        .card-row-top {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 16px;
+            transition: background 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            min-width: 56px;
             position: relative;
-            z-index: 1;
         }
 
-        .card-left {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .eur-badge {
-            width: 32px; height: 32px;
-            border-radius: 8px;
-            background: rgba(255,255,255,.12);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .card-ccy {
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .card-last4 {
-            font-size: 13px;
-            color: rgba(255,255,255,.48);
-            letter-spacing: .4px;
-        }
-
-        .card-balance {
-            font-size: 36px;
-            font-weight: 300;
-            letter-spacing: -.5px;
-            margin-bottom: 20px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .card-row-bottom {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            position: relative;
-            z-index: 1;
-        }
-
-        .holder-label {
-            font-size: 9px;
-            color: rgba(255,255,255,.34);
-            letter-spacing: .3px;
-            margin-bottom: 4px;
-        }
-
-        .holder-name {
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-.visa-logo {
-            font-size: 20px;
-            font-weight: 800;
-            font-style: italic;
-            letter-spacing: 2px;
-        }
-
-        /* ─── Transactions ─── */
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 18px;
-        }
-
-        .section-title {
-            font-size: 20px;
-            font-weight: 700;
-        }
-
-        .txn-item {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            padding: 12px 0;
-            border-bottom: 1px solid rgba(255,255,255,.052);
-        }
-
-        .txn-icon {
-            width: 42px; height: 42px;
-            border-radius: 11px;
-            background: rgba(255,255,255,.07);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .nav-item svg {
+            width: 22px;
+            height: 22px;
+            transition: stroke 0.35s ease;
             flex-shrink: 0;
         }
 
-        .txn-name {
-            font-size: 14px;
+        .nav-item span {
+            font-size: 10px;
             font-weight: 500;
-            margin-bottom: 4px;
-        }
-
-        .txn-date {
-            font-size: 11.5px;
-            color: rgba(255,255,255,.36);
-        }
-
-        .txn-amount {
-            font-size: 14px;
-            font-weight: 500;
+            letter-spacing: 0.2px;
+            transition: color 0.35s ease;
             white-space: nowrap;
         }
 
-        .txn-receipt-btn {
-            width: 30px; height: 30px;
-            border-radius: 9px;
-            background: rgba(255,255,255,.06);
-            border: 1px solid rgba(255,255,255,.09);
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer;
-            color: rgba(255,255,255,.35);
-            flex-shrink: 0;
-            transition: all .18s;
-            margin-left: 10px;
-        }
-        .txn-receipt-btn:active { background: rgba(255,255,255,.12); transform: scale(.9); }
+        .nav-item svg { stroke: #4a4a56; }
+        .nav-item span { color: #4a4a56; }
 
-        /* ─── RECEIPT MODAL ─── */
-        .receipt-overlay {
-            position: fixed; inset: 0; z-index: 100;
-            background: rgba(0,0,0,.55);
-            backdrop-filter: blur(6px);
-            -webkit-backdrop-filter: blur(6px);
-            display: flex; align-items: flex-end; justify-content: center;
-            opacity: 0; pointer-events: none;
-            transition: opacity .25s;
-        }
-        .receipt-overlay.show { opacity: 1; pointer-events: all; }
-
-        .receipt-sheet {
-            background: #1e1e22;
-            border-radius: 26px 26px 0 0;
-            padding: 10px 24px 40px;
-            width: 100%;
-            transform: translateY(100%);
-            transition: transform .3s cubic-bezier(.32,1,.54,1);
-        }
-        .receipt-overlay.show .receipt-sheet { transform: translateY(0); }
-
-        .receipt-handle {
-            width: 36px; height: 4px;
-            background: rgba(255,255,255,.18);
-            border-radius: 2px;
-            margin: 0 auto 22px;
+        .nav-item.active {
+            background: rgba(255,255,255,0.07);
         }
 
-        .receipt-icon {
-            width: 56px; height: 56px;
-            border-radius: 16px;
-            background: rgba(255,255,255,.07);
-            display: flex; align-items: center; justify-content: center;
-            margin: 0 auto 14px;
-            color: rgba(255,255,255,.6);
-        }
-
-        .receipt-title {
-            text-align: center;
-            font-size: 17px; font-weight: 600;
-            margin-bottom: 4px;
-        }
-
-        .receipt-status {
-            text-align: center;
-            font-size: 12px;
-            color: #4ac577;
-            margin-bottom: 24px;
-            display: flex; align-items: center; justify-content: center; gap: 5px;
-        }
-
-        .receipt-rows { display: flex; flex-direction: column; gap: 0; }
-
-        .receipt-row {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 13px 0;
-            border-bottom: 1px solid rgba(255,255,255,.05);
-            font-size: 13.5px;
-        }
-        .receipt-row:last-child { border-bottom: none; }
-        .receipt-row-label { color: rgba(255,255,255,.38); }
-        .receipt-row-val { font-weight: 500; }
-
-        .receipt-total {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 16px 0 0;
-            font-size: 15px; font-weight: 700;
-        }
-
-        .receipt-close {
-            width: 100%; margin-top: 20px;
-            background: rgba(255,255,255,.07);
-            border: none; border-radius: 14px;
-            color: rgba(255,255,255,.7);
-            font-size: 15px; font-weight: 500;
-            padding: 14px;
-            cursor: pointer;
-        }
-
-        /* ─── SCREEN 2 — STATS ─────────────────── */
-        .stats-body {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        .stats-top {
-            text-align: center;
-            padding: 42px 22px 0;
-            flex-shrink: 0;
-        }
-
-        .total-amount {
-            font-size: 38px;
-            font-weight: 700;
-            letter-spacing: -.5px;
-            margin-bottom: 6px;
-        }
-
-        .total-label {
-            font-size: 13px;
-            color: rgba(255,255,255,.37);
-            margin-bottom: 26px;
-        }
-
-        .tabs-row {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 10px;
-        }
-
-        .tabs-wrap {
-            display: flex;
-            background: rgba(255,255,255,.07);
-            border-radius: 10px;
-            padding: 4px;
-        }
-
-        .tab-btn {
-            padding: 7px 28px;
-            border-radius: 7px;
-            font-size: 13.5px;
-            cursor: pointer;
-            color: rgba(255,255,255,.4);
-            font-weight: 500;
-            user-select: none;
-            transition: all .2s;
-        }
-        .tab-btn.active {
-            background: rgba(255,255,255,.13);
-            color: #fff;
-        }
-
-        /* ─── Chart ─── */
-        .chart-wrap {
-            flex: 1;
-            position: relative;
-            padding: 0 12px;
-            min-height: 0;
-        }
-
-        .chart-svg {
-            width: 100%;
-            height: 100%;
-            display: block;
-        }
-
-        .chart-tooltip {
-            position: absolute;
-            background: rgba(255,255,255,.13);
-            border: 1px solid rgba(255,255,255,.09);
-            border-radius: 9px;
-            padding: 7px 14px;
-            font-size: 13px;
-            font-weight: 600;
-            color: #fff;
-            white-space: nowrap;
-            pointer-events: none;
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-        }
-
-        .days-bar {
-            display: flex;
-            justify-content: space-around;
-            padding: 10px 12px 14px;
-            flex-shrink: 0;
-        }
-
-        .day-item {
-            font-size: 13px;
-            color: rgba(255,255,255,.28);
-            font-weight: 500;
-            width: 28px;
-            text-align: center;
-            padding-bottom: 3px;
-        }
-        .day-item.active {
-            color: #fff;
-            font-weight: 700;
-            border-bottom: 2px solid #fff;
-        }
+        .nav-item.active svg { stroke: #fff; }
+        .nav-item.active span { color: #fff; }
     </style>
 </head>
 <body>
 
-<!-- Background Premium label -->
-<div style="position:fixed;inset:0;z-index:0;display:flex;align-items:flex-start;justify-content:flex-end;padding-top:32px;padding-right:52px;pointer-events:none;user-select:none;">
-    <span style="font-size:22px;font-weight:300;letter-spacing:14px;color:rgba(255,255,255,.08);font-family:'Raleway',sans-serif;white-space:nowrap;">PREMIUM</span>
-</div>
-
-<!-- ═══════════ SCREEN 1 — WALLET ═══════════ -->
-<div class="screen active" id="scr-wallet">
-
-    <div class="wallet-scroll">
-        <div class="page-header">
-            <div class="page-title">Wallets</div>
-            <div class="add-btn">+</div>
-        </div>
-
-        <!-- Credit Card Stack -->
-        <div class="card-wrapper">
-
-            <!-- Back of card (CVV) -->
-            <div class="card-back">
-                <div class="card-back-stripe"></div>
-            </div>
-
-            <!-- Front of card -->
-            <div class="credit-card">
-                <!-- Topographic lines emanating from right -->
-                <svg class="card-pattern" viewBox="0 0 260 158" preserveAspectRatio="xMaxYMid slice">
-                    <g fill="none" stroke="white" stroke-linecap="round">
-                        <path d="M295 -28 Q252 18 260 79 Q268 142 222 178" stroke-width="38" opacity=".085"/>
-                        <path d="M268 -36 Q224 12 232 79 Q240 148 190 184" stroke-width="33" opacity=".075"/>
-                        <path d="M242 -44 Q196 6 204 79 Q212 154 158 188" stroke-width="28" opacity=".065"/>
-                        <path d="M216 -52 Q168 0 176 79 Q184 160 126 192" stroke-width="23" opacity=".055"/>
-                        <path d="M190 -60 Q140 -6 148 79 Q156 166 94 196" stroke-width="18" opacity=".045"/>
-                        <path d="M164 -68 Q112 -12 120 79 Q128 172 62 200" stroke-width="14" opacity=".035"/>
-                    </g>
-                </svg>
-
-                <div class="card-row-top">
-                    <div class="card-left">
-                        <div class="eur-badge">$</div>
-                        <span class="card-ccy">USD</span>
-                    </div>
-                    <span class="card-last4">• 5806</span>
-                </div>
-
-                <div class="card-number-row">
-                    <span class="card-number">•••• •••• •••• 5806</span>
-                    <button class="copy-btn" onclick="copyText('4532123456785806', this)" title="Copy card number">
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="9" y="9" width="13" height="13" rx="2"/>
-                            <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
-                        </svg>
-                    </button>
-                </div>
-
-                <div class="card-balance">$3,240.00</div>
-
-                <div class="card-row-bottom">
-                    <div>
-                        <div class="holder-label">Holder</div>
-                        <div class="holder-name">Shane Cooper</div>
-                    </div>
-                    <div>
-                        <div class="holder-label">VALID THRU</div>
-                        <div class="holder-name">08/28</div>
-                    </div>
-                    <div class="visa-logo">VISA</div>
-                </div>
-            </div>
-
-        </div>
-
-        <!-- Transactions -->
-        <div class="section-header">
-            <div class="section-title">Transactions</div>
-            <svg width="20" height="16" viewBox="0 0 20 16" fill="none" opacity=".42">
-                <line x1="0" y1="1"  x2="20" y2="1"  stroke="white" stroke-width="2" stroke-linecap="round"/>
-                <line x1="3" y1="8"  x2="17" y2="8"  stroke="white" stroke-width="2" stroke-linecap="round"/>
-                <line x1="7" y1="15" x2="13" y2="15" stroke="white" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-        </div>
-
-        <!-- Restaurants and Bars -->
-        <div class="txn-item">
-            <div class="txn-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-                     stroke="rgba(255,255,255,.72)" stroke-width="1.5"
-                     stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M6 20H9M12 20H9M9 20V15"/>
-                    <path d="M17 20V12C17 12 19.5 11 19.5 9C19.5 7.24264 19.5 4.5 19.5 4.5"/>
-                    <path d="M17 8.5V4.5"/>
-                    <path d="M4.49999 11C5.49991 13.1281 8.99999 15 8.99999 15C8.99999 15 12.5001 13.1281 13.5 11C14.5795 8.70257 13.5 4.5 13.5 4.5L4.49999 4.5C4.49999 4.5 3.42047 8.70257 4.49999 11Z"/>
-                </svg>
-            </div>
-            <div style="flex:1">
-                <div class="txn-name">Restaurants and Bars</div>
-                <div class="txn-date">18 Jul, 07:45 pm</div>
-            </div>
-            <div class="txn-amount">- $32</div>
-            <button class="txn-receipt-btn" onclick="showReceipt('Restaurants & Bars','18 Jul, 07:45 pm','$32.00','TXN-8821')">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M8.5 4H6C4.89543 4 4 4.89543 4 6V20C4 21.1046 4.89543 22 6 22H12"/>
-                    <path d="M15.5 4H18C19.1046 4 20 4.89543 20 6V15"/>
-                    <path d="M8 6.4V4.5C8 4.22386 8.22386 4 8.5 4C8.77614 4 9.00422 3.77604 9.05152 3.50398C9.19968 2.65171 9.77399 1 12 1C14.226 1 14.8003 2.65171 14.9485 3.50398C14.9958 3.77604 15.2239 4 15.5 4C15.7761 4 16 4.22386 16 4.5V6.4C16 6.73137 15.7314 7 15.4 7H8.6C8.26863 7 8 6.73137 8 6.4Z"/>
-                    <path d="M15.5 20.5L17.5 22.5L22.5 17.5"/>
-                </svg>
-            </button>
-        </div>
-
-        <!-- Grocery -->
-        <div class="txn-item">
-            <div class="txn-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-                     stroke="rgba(255,255,255,.72)" stroke-width="1.5"
-                     stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M19.2609 9.69589L20.6455 18.6959C20.8319 19.9074 19.8945 21 18.6688 21H5.33122C4.10545 21 3.16809 19.9074 3.35448 18.6959L4.73909 9.69589C4.8892 8.72022 5.7287 8 6.71584 8H17.2842C18.2713 8 19.1108 8.72022 19.2609 9.69589Z"/>
-                    <path d="M9 11L9 18"/>
-                    <path d="M15 11L15 18"/>
-                    <path d="M14 5C14 3.89543 13.1046 3 12 3C10.8954 3 10 3.89543 10 5"/>
-                </svg>
-            </div>
-            <div style="flex:1">
-                <div class="txn-name">Grocery</div>
-                <div class="txn-date">17 Jul, 11:20 am</div>
-            </div>
-            <div class="txn-amount">- $67</div>
-            <button class="txn-receipt-btn" onclick="showReceipt('Grocery','17 Jul, 11:20 am','$67.00','TXN-7743')">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M8.5 4H6C4.89543 4 4 4.89543 4 6V20C4 21.1046 4.89543 22 6 22H12"/>
-                    <path d="M15.5 4H18C19.1046 4 20 4.89543 20 6V15"/>
-                    <path d="M8 6.4V4.5C8 4.22386 8.22386 4 8.5 4C8.77614 4 9.00422 3.77604 9.05152 3.50398C9.19968 2.65171 9.77399 1 12 1C14.226 1 14.8003 2.65171 14.9485 3.50398C14.9958 3.77604 15.2239 4 15.5 4C15.7761 4 16 4.22386 16 4.5V6.4C16 6.73137 15.7314 7 15.4 7H8.6C8.26863 7 8 6.73137 8 6.4Z"/>
-                    <path d="M15.5 20.5L17.5 22.5L22.5 17.5"/>
-                </svg>
-            </button>
-        </div>
-
-        <!-- Transport -->
-        <div class="txn-item">
-            <div class="txn-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-                     stroke="rgba(255,255,255,.72)" stroke-width="1.5"
-                     stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M8 19C9.10457 19 10 18.1046 10 17C10 15.8954 9.10457 15 8 15C6.89543 15 6 15.8954 6 17C6 18.1046 6.89543 19 8 19Z" stroke-miterlimit="1.5"/>
-                    <path d="M18 19C19.1046 19 20 18.1046 20 17C20 15.8954 19.1046 15 18 15C16.8954 15 16 15.8954 16 17C16 18.1046 16.8954 19 18 19Z" stroke-miterlimit="1.5"/>
-                    <path d="M10.05 17H15V6.6C15 6.26863 14.7314 6 14.4 6H1"/>
-                    <path d="M5.65 17H3.6C3.26863 17 3 16.7314 3 16.4V11.5"/>
-                    <path d="M2 9L6 9"/>
-                    <path d="M15 9H20.6101C20.8472 9 21.0621 9.13964 21.1584 9.35632L22.9483 13.3836C22.9824 13.4604 23 13.5434 23 13.6273V16.4C23 16.7314 22.7314 17 22.4 17H20.5"/>
-                    <path d="M15 17H16"/>
-                </svg>
-            </div>
-            <div style="flex:1">
-                <div class="txn-name">Transport</div>
-                <div class="txn-date">16 Jul, 08:14 am</div>
-            </div>
-            <div class="txn-amount">- $18</div>
-            <button class="txn-receipt-btn" onclick="showReceipt('Transport','16 Jul, 08:14 am','$18.00','TXN-6612')">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M8.5 4H6C4.89543 4 4 4.89543 4 6V20C4 21.1046 4.89543 22 6 22H12"/>
-                    <path d="M15.5 4H18C19.1046 4 20 4.89543 20 6V15"/>
-                    <path d="M8 6.4V4.5C8 4.22386 8.22386 4 8.5 4C8.77614 4 9.00422 3.77604 9.05152 3.50398C9.19968 2.65171 9.77399 1 12 1C14.226 1 14.8003 2.65171 14.9485 3.50398C14.9958 3.77604 15.2239 4 15.5 4C15.7761 4 16 4.22386 16 4.5V6.4C16 6.73137 15.7314 7 15.4 7H8.6C8.26863 7 8 6.73137 8 6.4Z"/>
-                    <path d="M15.5 20.5L17.5 22.5L22.5 17.5"/>
-                </svg>
-            </button>
-        </div>
-
-        <!-- Restaurants and Bars #2 -->
-        <div class="txn-item">
-            <div class="txn-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-                     stroke="rgba(255,255,255,.72)" stroke-width="1.7"
-                     stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M18 2v20M15 2v6a3 3 0 006 0V2M6 2v6M9 2v6M6 8a3 3 0 006 0M6 8v12"/>
-                </svg>
-            </div>
-            <div style="flex:1">
-                <div class="txn-name">Restaurants and Bars</div>
-                <div class="txn-date">15 Jul, 09:33 pm</div>
-            </div>
-            <div class="txn-amount">- $54</div>
-            <button class="txn-receipt-btn" onclick="showReceipt('Restaurants & Bars','15 Jul, 09:33 pm','$54.00','TXN-5509')">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M8.5 4H6C4.89543 4 4 4.89543 4 6V20C4 21.1046 4.89543 22 6 22H12"/>
-                    <path d="M15.5 4H18C19.1046 4 20 4.89543 20 6V15"/>
-                    <path d="M8 6.4V4.5C8 4.22386 8.22386 4 8.5 4C8.77614 4 9.00422 3.77604 9.05152 3.50398C9.19968 2.65171 9.77399 1 12 1C14.226 1 14.8003 2.65171 14.9485 3.50398C14.9958 3.77604 15.2239 4 15.5 4C15.7761 4 16 4.22386 16 4.5V6.4C16 6.73137 15.7314 7 15.4 7H8.6C8.26863 7 8 6.73137 8 6.4Z"/>
-                    <path d="M15.5 20.5L17.5 22.5L22.5 17.5"/>
-                </svg>
-            </button>
-        </div>
+    <div class="page active" id="page-home">
+        <h2>Главная</h2>
     </div>
 
-    <div class="bottom-nav">
-        <div class="nav-btn active" onclick="goTo('wallet')">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
-                 stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="2" y="5" width="20" height="15" rx="3"/>
+    <div class="page" id="page-wallet">
+        <h2>Кошелёк</h2>
+    </div>
+
+    <div class="page" id="page-lootboxes">
+        <h2>Лутбоксы</h2>
+    </div>
+
+    <div class="page" id="page-bonuses">
+        <h2>Бонусы</h2>
+    </div>
+
+    <div class="page" id="page-account">
+        <h2>Аккаунт</h2>
+    </div>
+
+    <nav class="nav-island">
+
+        <div class="nav-item" onclick="switchPage('wallet', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="6" width="20" height="13" rx="3"/>
                 <path d="M2 10h20"/>
-                <circle cx="16" cy="14.5" r="1.5" fill="white" stroke="none"/>
+                <circle cx="17" cy="14" r="1" fill="currentColor" stroke="none"/>
             </svg>
+            <span>Кошелёк</span>
         </div>
-        <div class="nav-btn" onclick="goTo('stats')">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
-                 stroke="white" stroke-width="2" stroke-linecap="round">
-                <circle cx="12" cy="12" r="10"/>
-                <path d="M12 12V6"/>
-                <path d="M12 12l4.2-2.4"/>
+
+        <div class="nav-item" onclick="switchPage('lootboxes', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 8H3L4.5 20.5A1.5 1.5 0 0 0 6 22h12a1.5 1.5 0 0 0 1.5-1.5L21 8Z"/>
+                <path d="M9 8V6a3 3 0 0 1 6 0v2"/>
+                <line x1="12" y1="12" x2="12" y2="17"/>
+                <line x1="9.5" y1="14.5" x2="14.5" y2="14.5"/>
             </svg>
+            <span>Лутбоксы</span>
         </div>
-        <div class="nav-btn" onclick="goTo('wallet')">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
-                 stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="2" y="3" width="20" height="18" rx="3"/>
-                <line x1="2"  y1="9" x2="22" y2="9"/>
-                <line x1="9"  y1="9" x2="9"  y2="21"/>
+
+        <div class="nav-item active" onclick="switchPage('home', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V10.5Z"/>
+                <path d="M9 21V13h6v8"/>
             </svg>
+            <span>Главная</span>
         </div>
-        <div class="nav-btn" onclick="goTo('wallet')">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
-                 stroke="white" stroke-width="2" stroke-linecap="round">
-                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
-                <circle cx="12" cy="7" r="4"/>
+
+        <div class="nav-item" onclick="switchPage('bonuses', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 12 20 22 4 22 4 12"/>
+                <rect x="2" y="7" width="20" height="5" rx="2"/>
+                <path d="M12 22V7"/>
+                <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7Z"/>
+                <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7Z"/>
             </svg>
-        </div>
-    </div>
-</div>
-
-
-<!-- ═══════════ SCREEN 2 — STATS ═══════════ -->
-<div class="screen" id="scr-stats">
-
-    <div class="stats-body">
-        <div class="stats-top">
-            <div class="total-amount">$ 3,240.00</div>
-            <div class="total-label">Total Balance</div>
-            <div class="tabs-row">
-                <div class="tabs-wrap">
-                    <div class="tab-btn active" onclick="switchTab(this)">Income</div>
-                    <div class="tab-btn"        onclick="switchTab(this)">Spent</div>
-                </div>
-            </div>
+            <span>Бонусы</span>
         </div>
 
-        <div class="chart-wrap" id="chartWrap">
-            <div class="chart-tooltip" id="tooltip">$ 2540.00</div>
-
-            <!--
-                viewBox 320 × 190
-                Peak of white wave: x=194, y=60
-                W column: 4th of 6, evenly at x = 16,74,131,194,252,304
-            -->
-            <svg class="chart-svg" id="chartSvg"
-                 viewBox="0 0 320 190" preserveAspectRatio="none">
-                <defs>
-                    <linearGradient id="wGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%"   stop-color="white" stop-opacity=".20"/>
-                        <stop offset="100%" stop-color="white" stop-opacity="0"/>
-                    </linearGradient>
-                    <linearGradient id="gGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%"   stop-color="white" stop-opacity=".07"/>
-                        <stop offset="100%" stop-color="white" stop-opacity="0"/>
-                    </linearGradient>
-                </defs>
-
-                <!-- gray background wave — fill -->
-                <path d="M0,136 C30,118 52,134 80,120 C108,106 124,98 152,108
-                          C180,118 198,132 224,114 C250,96 284,80 320,92
-                          L320,190 L0,190 Z"
-                      fill="url(#gGrad)"/>
-                <!-- gray background wave — stroke -->
-                <path d="M0,136 C30,118 52,134 80,120 C108,106 124,98 152,108
-                          C180,118 198,132 224,114 C250,96 284,80 320,92"
-                      fill="none" stroke="rgba(255,255,255,.22)" stroke-width="1.8"/>
-
-                <!-- white foreground wave — fill -->
-                <path d="M0,162 C18,156 38,160 62,150 C88,138 106,128 130,114
-                          C150,102 164,84 182,68 C192,57 200,55 210,64
-                          C224,76 240,102 264,118 C288,134 308,126 320,130
-                          L320,190 L0,190 Z"
-                      fill="url(#wGrad)"/>
-                <!-- white foreground wave — stroke -->
-                <path d="M0,162 C18,156 38,160 62,150 C88,138 106,128 130,114
-                          C150,102 164,84 182,68 C192,57 200,55 210,64
-                          C224,76 240,102 264,118 C288,134 308,126 320,130"
-                      fill="none" stroke="white" stroke-width="2.6"
-                      stroke-linejoin="round" stroke-linecap="round"/>
-
-                <!-- vertical dashed line at peak -->
-                <line x1="194" y1="60" x2="194" y2="188"
-                      stroke="rgba(255,255,255,.18)" stroke-width="1"
-                      stroke-dasharray="4,3"/>
-
-                <!-- peak dot -->
-                <circle cx="194" cy="60" r="10" fill="rgba(255,255,255,.12)"/>
-                <circle cx="194" cy="60" r="5"  fill="white"/>
+        <div class="nav-item" onclick="switchPage('account', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="8" r="4"/>
+                <path d="M4 20c0-3.8 3.6-7 8-7s8 3.2 8 7"/>
             </svg>
+            <span>Аккаунт</span>
         </div>
 
-        <div class="days-bar">
-            <div class="day-item">S</div>
-            <div class="day-item">M</div>
-            <div class="day-item">T</div>
-            <div class="day-item active">W</div>
-            <div class="day-item">T</div>
-            <div class="day-item">F</div>
-        </div>
-    </div>
+    </nav>
 
-    <div class="bottom-nav">
-        <div class="nav-btn" onclick="goTo('wallet')">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
-                 stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="2" y="5" width="20" height="15" rx="3"/>
-                <path d="M2 10h20"/>
-                <circle cx="16" cy="14.5" r="1.5" fill="white" stroke="none"/>
-            </svg>
-        </div>
-        <div class="nav-btn active" onclick="goTo('stats')">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
-                 stroke="white" stroke-width="2" stroke-linecap="round">
-                <circle cx="12" cy="12" r="10"/>
-                <path d="M12 12V6"/>
-                <path d="M12 12l4.2-2.4"/>
-            </svg>
-        </div>
-        <div class="nav-btn" onclick="goTo('stats')">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
-                 stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="2" y="3" width="20" height="18" rx="3"/>
-                <line x1="2"  y1="9" x2="22" y2="9"/>
-                <line x1="9"  y1="9" x2="9"  y2="21"/>
-            </svg>
-        </div>
-        <div class="nav-btn" onclick="goTo('stats')">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
-                 stroke="white" stroke-width="2" stroke-linecap="round">
-                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
-                <circle cx="12" cy="7" r="4"/>
-            </svg>
-        </div>
-    </div>
-</div>
+    <script>
+        if (window.Telegram?.WebApp) {
+            Telegram.WebApp.ready();
+            Telegram.WebApp.expand();
+        }
 
+        function switchPage(page, el) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById('page-' + page).classList.add('active');
+            el.classList.add('active');
+        }
+    </script>
 
-<!-- Receipt Modal -->
-<div class="receipt-overlay" id="receiptOverlay" onclick="hideReceipt(event)">
-    <div class="receipt-sheet">
-        <div class="receipt-handle"></div>
-        <div class="receipt-icon">
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M8.5 4H6C4.89543 4 4 4.89543 4 6V20C4 21.1046 4.89543 22 6 22H12"/>
-                <path d="M15.5 4H18C19.1046 4 20 4.89543 20 6V15"/>
-                <path d="M8 6.4V4.5C8 4.22386 8.22386 4 8.5 4C8.77614 4 9.00422 3.77604 9.05152 3.50398C9.19968 2.65171 9.77399 1 12 1C14.226 1 14.8003 2.65171 14.9485 3.50398C14.9958 3.77604 15.2239 4 15.5 4C15.7761 4 16 4.22386 16 4.5V6.4C16 6.73137 15.7314 7 15.4 7H8.6C8.26863 7 8 6.73137 8 6.4Z"/>
-                <path d="M15.5 20.5L17.5 22.5L22.5 17.5"/>
-            </svg>
-        </div>
-        <div class="receipt-title" id="rTitle"></div>
-        <div class="receipt-status">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-            Completed
-        </div>
-        <div class="receipt-rows">
-            <div class="receipt-row"><span class="receipt-row-label">Date</span><span class="receipt-row-val" id="rDate"></span></div>
-            <div class="receipt-row"><span class="receipt-row-label">Category</span><span class="receipt-row-val" id="rCat"></span></div>
-            <div class="receipt-row"><span class="receipt-row-label">Card</span><span class="receipt-row-val">•••• 5806</span></div>
-            <div class="receipt-row"><span class="receipt-row-label">Transaction ID</span><span class="receipt-row-val" id="rId"></span></div>
-        </div>
-        <div class="receipt-total"><span>Total</span><span id="rTotal"></span></div>
-        <button class="receipt-close" onclick="hideReceipt()">Close</button>
-    </div>
-</div>
-
-<script>
-    if (window.Telegram && window.Telegram.WebApp) {
-        Telegram.WebApp.ready();
-        Telegram.WebApp.expand();
-    }
-
-    function copyText(text, btn) {
-        navigator.clipboard.writeText(text).then(function() {
-            var prev = btn.innerHTML;
-            btn.classList.add('copied');
-            btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
-            setTimeout(function() { btn.classList.remove('copied'); btn.innerHTML = prev; }, 1600);
-        });
-    }
-
-    function showReceipt(name, date, amount, id) {
-        document.getElementById('rTitle').textContent = name;
-        document.getElementById('rDate').textContent = date;
-        document.getElementById('rCat').textContent = name;
-        document.getElementById('rId').textContent = id;
-        document.getElementById('rTotal').textContent = amount;
-        document.getElementById('receiptOverlay').classList.add('show');
-    }
-    function hideReceipt(e) {
-        if (!e || e.target === document.getElementById('receiptOverlay') || !e.target.closest)
-            document.getElementById('receiptOverlay').classList.remove('show');
-    }
-
-    function goTo(screen) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById('scr-' + screen).classList.add('active');
-        if (screen === 'stats') requestAnimationFrame(positionTooltip);
-    }
-
-    function switchTab(el) {
-        el.closest('.tabs-wrap').querySelectorAll('.tab-btn')
-          .forEach(t => t.classList.remove('active'));
-        el.classList.add('active');
-    }
-
-    function positionTooltip() {
-        const svg  = document.getElementById('chartSvg');
-        const tip  = document.getElementById('tooltip');
-        const wrap = document.getElementById('chartWrap');
-        if (!svg || !tip || !wrap) return;
-
-        const sr = svg.getBoundingClientRect();
-        const wr = wrap.getBoundingClientRect();
-
-        // viewBox peak: x=194, y=60  in  320×190
-        const px = (sr.left - wr.left) + (194 / 320) * sr.width;
-        const py = (sr.top  - wr.top)  + (60  / 190) * sr.height;
-
-        tip.style.left = Math.max(0, px - tip.offsetWidth  / 2) + 'px';
-        tip.style.top  = Math.max(0, py - tip.offsetHeight - 12) + 'px';
-    }
-
-    window.addEventListener('resize', () => {
-        if (document.getElementById('scr-stats').classList.contains('active'))
-            positionTooltip();
-    });
-</script>
 </body>
 </html>
