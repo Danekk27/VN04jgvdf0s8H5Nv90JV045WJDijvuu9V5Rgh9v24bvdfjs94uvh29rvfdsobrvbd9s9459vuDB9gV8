@@ -22,33 +22,35 @@
             overflow: hidden;
         }
 
-        /* Pages */
-        .page {
+        .pages-wrapper {
             position: absolute;
             inset: 0;
             bottom: 90px;
+            overflow: hidden;
+        }
+
+        .page {
+            position: absolute;
+            inset: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            opacity: 0;
-            transform: translateY(12px) scale(0.98);
-            transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-                        transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            pointer-events: none;
             gap: 12px;
+            opacity: 0;
+            pointer-events: none;
+            will-change: transform, opacity;
         }
 
         .page.active {
             opacity: 1;
-            transform: translateY(0) scale(1);
             pointer-events: all;
         }
 
         .page h2 {
             font-size: 22px;
             font-weight: 600;
-            color: rgba(255,255,255,0.2);
+            color: rgba(255,255,255,0.18);
             letter-spacing: 0.5px;
         }
 
@@ -78,64 +80,62 @@
             cursor: pointer;
             transition: background 0.35s cubic-bezier(0.4, 0, 0.2, 1);
             min-width: 56px;
-            position: relative;
         }
 
         .nav-item svg {
             width: 22px;
             height: 22px;
-            transition: stroke 0.35s ease;
             flex-shrink: 0;
+            transition: stroke 0.35s ease, fill 0.35s ease;
+            stroke: #4a4a56;
+            fill: none;
         }
 
         .nav-item span {
             font-size: 10px;
             font-weight: 500;
             letter-spacing: 0.2px;
+            color: #4a4a56;
             transition: color 0.35s ease;
             white-space: nowrap;
         }
-
-        .nav-item svg { stroke: #4a4a56; }
-        .nav-item span { color: #4a4a56; }
 
         .nav-item.active {
             background: rgba(255,255,255,0.07);
         }
 
         .nav-item.active svg { stroke: #fff; }
+        .nav-item.active svg .dot { fill: #fff; }
         .nav-item.active span { color: #fff; }
     </style>
 </head>
 <body>
 
-    <div class="page active" id="page-home">
-        <h2>Главная</h2>
-    </div>
-
-    <div class="page" id="page-wallet">
-        <h2>Кошелёк</h2>
-    </div>
-
-    <div class="page" id="page-lootboxes">
-        <h2>Лутбоксы</h2>
-    </div>
-
-    <div class="page" id="page-bonuses">
-        <h2>Бонусы</h2>
-    </div>
-
-    <div class="page" id="page-account">
-        <h2>Аккаунт</h2>
+    <div class="pages-wrapper">
+        <div class="page active" id="page-home">
+            <h2>Главная</h2>
+        </div>
+        <div class="page" id="page-wallet">
+            <h2>Кошелёк</h2>
+        </div>
+        <div class="page" id="page-lootboxes">
+            <h2>Лутбоксы</h2>
+        </div>
+        <div class="page" id="page-bonuses">
+            <h2>Бонусы</h2>
+        </div>
+        <div class="page" id="page-account">
+            <h2>Аккаунт</h2>
+        </div>
     </div>
 
     <nav class="nav-island">
 
         <div class="nav-item" onclick="switchPage('wallet', this)">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="2" y="6" width="20" height="13" rx="3"/>
-                <path d="M2 10h20"/>
-                <circle cx="17" cy="14" r="1" fill="currentColor" stroke="none"/>
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 20H5C3.89543 20 3 19.1046 3 18V9C3 7.89543 3.89543 7 5 7H19C20.1046 7 21 7.89543 21 9V18C21 19.1046 20.1046 20 19 20Z"/>
+                <path class="dot" d="M16.5 14C16.2239 14 16 13.7761 16 13.5C16 13.2239 16.2239 13 16.5 13C16.7761 13 17 13.2239 17 13.5C17 13.7761 16.7761 14 16.5 14Z" style="fill:inherit"/>
+                <path d="M18 7V5.60322C18 4.28916 16.7544 3.33217 15.4847 3.67075L4.48467 6.60409C3.60917 6.83756 3 7.63046 3 8.53656V9"/>
             </svg>
             <span>Кошелёк</span>
         </div>
@@ -185,11 +185,57 @@
             Telegram.WebApp.expand();
         }
 
+        const pageOrder = ['wallet', 'lootboxes', 'home', 'bonuses', 'account'];
+        let currentPageId = 'home';
+        let isAnimating = false;
+
         function switchPage(page, el) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            if (page === currentPageId || isAnimating) return;
+            isAnimating = true;
+
+            const currentIdx = pageOrder.indexOf(currentPageId);
+            const newIdx = pageOrder.indexOf(page);
+            const goingRight = newIdx > currentIdx;
+
+            const oldPage = document.getElementById('page-' + currentPageId);
+            const newPage = document.getElementById('page-' + page);
+            const duration = 380;
+            const easing = 'cubic-bezier(0.4, 0, 0.2, 1)';
+
+            // Position new page off-screen instantly
+            newPage.style.transition = 'none';
+            newPage.style.transform = goingRight ? 'translateX(100%)' : 'translateX(-100%)';
+            newPage.style.opacity = '1';
+            newPage.classList.add('active');
+
+            // Force reflow
+            newPage.offsetHeight;
+
+            const t = `transform ${duration}ms ${easing}, opacity ${duration}ms ${easing}`;
+
+            // Animate old page out
+            oldPage.style.transition = t;
+            oldPage.style.transform = goingRight ? 'translateX(-60px)' : 'translateX(60px)';
+            oldPage.style.opacity = '0';
+
+            // Animate new page in
+            newPage.style.transition = t;
+            newPage.style.transform = 'translateX(0)';
+
+            // Update nav immediately
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById('page-' + page).classList.add('active');
             el.classList.add('active');
+
+            currentPageId = page;
+
+            setTimeout(() => {
+                oldPage.classList.remove('active');
+                oldPage.style.transform = '';
+                oldPage.style.opacity = '';
+                oldPage.style.transition = '';
+                newPage.style.transition = '';
+                isAnimating = false;
+            }, duration);
         }
     </script>
 
