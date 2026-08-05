@@ -56,15 +56,15 @@
         /* Nav island */
         .nav-island {
             position: fixed;
-            bottom: 20px;
+            bottom: 16px;
             left: 50%;
             transform: translateX(-50%);
             background: #242429;
-            border-radius: 18px;
-            padding: 10px 12px;
+            border-radius: 16px;
+            padding: 6px 8px;
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 2px;
             box-shadow: 0 8px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05);
             overflow: hidden;
         }
@@ -100,16 +100,16 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 5px;
-            padding: 9px 14px;
-            border-radius: 22px;
+            gap: 3px;
+            padding: 6px 10px;
+            border-radius: 12px;
             cursor: pointer;
-            min-width: 56px;
+            min-width: 44px;
         }
 
         .nav-item svg {
-            width: 22px;
-            height: 22px;
+            width: 18px;
+            height: 18px;
             flex-shrink: 0;
             stroke: #4a4a56;
             fill: none;
@@ -117,12 +117,44 @@
         }
 
         .nav-item span {
-            font-size: 10px;
+            font-size: 9px;
             font-weight: 500;
             letter-spacing: 0.2px;
             color: #4a4a56;
             white-space: nowrap;
             transition: color 0.35s ease;
+        }
+
+        .nav-avatar {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1.5px solid #4a4a56;
+            transition: border-color 0.35s ease;
+        }
+
+        .nav-item.active .nav-avatar {
+            border-color: #fff;
+        }
+
+        .nav-avatar-placeholder {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #4a4a56;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px;
+            font-weight: 600;
+            color: #fff;
+            transition: background 0.35s ease;
+        }
+
+        .nav-item.active .nav-avatar-placeholder {
+            background: #fff;
+            color: #18181c;
         }
 
         .nav-item.active svg { stroke: #fff; }
@@ -194,10 +226,9 @@
         </div>
 
         <div class="nav-item" id="tab-account" onclick="switchPage('account', this)">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="8" r="4"/>
-                <path d="M4 20c0-3.8 3.6-7 8-7s8 3.2 8 7"/>
-            </svg>
+            <div id="avatarContainer">
+                <div class="nav-avatar-placeholder" id="avatarPlaceholder">?</div>
+            </div>
             <span>Аккаунт</span>
         </div>
     </nav>
@@ -206,6 +237,27 @@
         if (window.Telegram?.WebApp) {
             Telegram.WebApp.ready();
             Telegram.WebApp.expand();
+        }
+
+        // Load Telegram avatar
+        const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
+        if (tgUser) {
+            const container = document.getElementById('avatarContainer');
+            if (tgUser.photo_url) {
+                const img = document.createElement('img');
+                img.src = tgUser.photo_url;
+                img.className = 'nav-avatar';
+                img.onerror = () => showInitials(tgUser);
+                container.innerHTML = '';
+                container.appendChild(img);
+            } else {
+                showInitials(tgUser);
+            }
+        }
+
+        function showInitials(user) {
+            const initials = (user.first_name?.[0] || '') + (user.last_name?.[0] || '');
+            document.getElementById('avatarPlaceholder').textContent = initials || '?';
         }
 
         let currentPageId = 'home';
