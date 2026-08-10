@@ -203,7 +203,7 @@
             height: 172px;
             overflow: hidden;
             background: #fbfcfe;
-            border-radius: 18px;
+            border-radius: 10px;
             flex-shrink: 0;
             cursor: default;
         }
@@ -262,10 +262,6 @@
         <div class="page" id="page-account">
             <div class="pgb-wrapper" id="pgbWrapper">
                 <div class="pgb-grid" id="pgbGrid"></div>
-                <div class="pgb-overlay">
-                    <div class="pgb-title">Мой аккаунт</div>
-                    <div class="pgb-subtitle">Баланс · Бонусы · Настройки</div>
-                </div>
             </div>
         </div>
     </div>
@@ -398,10 +394,10 @@
         }
 
         // ===== Pixel Grid Banner =====
-        const PGB_CELL_SIZE  = 36;
+        const PGB_CELL_SIZE  = 18;
         const PGB_GAP        = 2;
         const PGB_GLOW_R     = 180;
-        const PGB_PALETTE    = ['#dbeafe','#e0f0fb','#d5e9f9','#e6f2fc','#cfe4f5','#e2edf9'];
+        const PGB_PALETTE    = ['#93c5fd','#60a5fa','#7ab8f7','#5eaaee','#6fb3f5','#8ec6ff'];
         const PGB_WHITE      = [255, 255, 255];
 
         function pgbHexToRgb(hex) {
