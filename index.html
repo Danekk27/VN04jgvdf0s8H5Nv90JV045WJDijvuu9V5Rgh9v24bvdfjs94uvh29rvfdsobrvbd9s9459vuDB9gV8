@@ -231,19 +231,29 @@
             z-index: 1;
         }
 
-        .pgb-title {
-            font-size: 21px;
-            font-weight: 700;
-            color: #1a1d2e;
-            letter-spacing: -0.4px;
+        .pgb-avatar-wrap {
+            transform: translateX(-18px);
         }
 
-        .pgb-subtitle {
-            font-size: 12px;
-            font-weight: 500;
-            color: #6b7280;
-            margin-top: 5px;
-            letter-spacing: 0.1px;
+        .pgb-avatar-img {
+            width: 86px;
+            height: 86px;
+            border-radius: 50%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .pgb-avatar-ph {
+            width: 86px;
+            height: 86px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.18);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            font-weight: 700;
+            color: #fff;
         }
     </style>
 </head>
@@ -262,6 +272,11 @@
         <div class="page" id="page-account">
             <div class="pgb-wrapper" id="pgbWrapper">
                 <div class="pgb-grid" id="pgbGrid"></div>
+                <div class="pgb-overlay">
+                    <div class="pgb-avatar-wrap">
+                        <div class="pgb-avatar-ph" id="pgbAvatarPh">?</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -490,7 +505,7 @@
 
             let pgbT = 0;
             function pgbAutoLoop() {
-                pgbT += 0.0007;
+                pgbT += 0.0014;
                 const w = wrapper.offsetWidth;
                 const h = wrapper.offsetHeight;
 
@@ -528,6 +543,26 @@
                 indicator.style.transition = '';
             });
             pgbInit();
+
+            // Populate banner avatar
+            const pgbPh = document.getElementById('pgbAvatarPh');
+            if (tgUser && pgbPh) {
+                const wrap = pgbPh.parentElement;
+                if (tgUser.photo_url) {
+                    const img = document.createElement('img');
+                    img.src = tgUser.photo_url;
+                    img.className = 'pgb-avatar-img';
+                    img.onerror = () => {
+                        const initials = (tgUser.first_name?.[0] || '') + (tgUser.last_name?.[0] || '');
+                        pgbPh.textContent = initials || '?';
+                    };
+                    wrap.innerHTML = '';
+                    wrap.appendChild(img);
+                } else {
+                    const initials = (tgUser.first_name?.[0] || '') + (tgUser.last_name?.[0] || '');
+                    pgbPh.textContent = initials || '?';
+                }
+            }
         });
     </script>
 
