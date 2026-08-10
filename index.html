@@ -202,7 +202,7 @@
             width: 100%;
             height: 172px;
             overflow: hidden;
-            background: #4f9de8;
+            background: #325ddb;
             border-radius: 10px;
             flex-shrink: 0;
             cursor: default;
@@ -396,8 +396,8 @@
         // ===== Pixel Grid Banner =====
         const PGB_CELL_SIZE  = 18;
         const PGB_GAP        = 0;
-        const PGB_GLOW_R     = 180;
-        const PGB_PALETTE    = ['#4f9de8','#4e9ce7','#509ee9','#4d9be6','#519fe9','#4f9de7'];
+        const PGB_GLOW_R     = 120;
+        const PGB_PALETTE    = ['#325ddb','#355edb'];
         const PGB_WHITE      = [255, 255, 255];
 
         function pgbHexToRgb(hex) {
@@ -469,7 +469,7 @@
                     const d2 = dx*dx + dy*dy;
                     if (d2 < R2) {
                         const ratio = Math.sqrt(d2) / R;
-                        t = Math.pow(1 - ratio, 1.8);
+                        t = Math.pow(1 - ratio, 3.2);
                     }
                 }
                 if (t > 0) {
