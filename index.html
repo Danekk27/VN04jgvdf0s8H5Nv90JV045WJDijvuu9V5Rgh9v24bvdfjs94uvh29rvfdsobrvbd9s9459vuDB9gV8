@@ -202,7 +202,7 @@
             width: 100%;
             height: 172px;
             overflow: hidden;
-            background: #4d79fc;
+            background: #3a65e8;
             border-radius: 10px;
             flex-shrink: 0;
             cursor: default;
@@ -425,9 +425,9 @@
 
         // ===== Banner gradient =====
         const PGB_GLOW_R  = 280;
-        const PGB_BASE    = '#4d79fc';
-        const PGB_MID     = '#6b96fd';
-        const PGB_CENTER  = '#a8ccff';
+        const PGB_BASE    = '#3a65e8';
+        const PGB_MID     = '#5278f0';
+        const PGB_CENTER  = '#90b5ff';
 
         function pgbDraw(wrapper, x, y) {
             wrapper.style.background =
@@ -475,7 +475,6 @@
             // Populate banner avatar
             const pgbPh = document.getElementById('pgbAvatarPh');
             if (tgUser && pgbPh) {
-                const wrap = pgbPh.parentElement;
                 if (tgUser.photo_url) {
                     const img = document.createElement('img');
                     img.src = tgUser.photo_url;
@@ -483,9 +482,9 @@
                     img.onerror = () => {
                         const initials = (tgUser.first_name?.[0] || '') + (tgUser.last_name?.[0] || '');
                         pgbPh.textContent = initials || '?';
+                        pgbPh.id = 'pgbAvatarPh';
                     };
-                    wrap.innerHTML = '';
-                    wrap.appendChild(img);
+                    pgbPh.replaceWith(img);
                 } else {
                     const initials = (tgUser.first_name?.[0] || '') + (tgUser.last_name?.[0] || '');
                     pgbPh.textContent = initials || '?';
