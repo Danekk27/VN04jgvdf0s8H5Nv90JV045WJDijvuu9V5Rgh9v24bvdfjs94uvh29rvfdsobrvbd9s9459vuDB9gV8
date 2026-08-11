@@ -842,6 +842,7 @@
             gap: 12px;
             padding: 16px 14px;
             position: relative;
+            transition: background 0.35s ease, backdrop-filter 0.35s ease;
         }
 
         .profile-edit-btn {
@@ -1285,6 +1286,159 @@
             border-radius: 8px;
             padding: 5px 11px;
         }
+
+        /* ===== Profile Background Editor Sheet ===== */
+        .profile-bg-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            z-index: 200;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .profile-bg-backdrop.open {
+            opacity: 1;
+            pointer-events: all;
+        }
+        .profile-bg-sheet {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #1e1e23;
+            border-radius: 20px 20px 0 0;
+            z-index: 201;
+            padding: 0 16px 40px;
+            transform: translateY(100%);
+            transition: transform 0.38s cubic-bezier(0.32, 0.72, 0, 1);
+        }
+        .profile-bg-sheet.open {
+            transform: translateY(0);
+        }
+        .profile-bg-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+        .profile-bg-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+        }
+        .profile-bg-lock-btn {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.10);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: background 0.2s ease, border-color 0.2s ease;
+        }
+        .profile-bg-lock-btn.unlocked {
+            background: rgba(0,122,255,0.15);
+            border-color: rgba(0,122,255,0.35);
+        }
+        .profile-bg-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            max-height: 362px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+            padding-right: 2px;
+        }
+        .profile-bg-grid::-webkit-scrollbar { display: none; }
+        .profile-bg-option {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            height: 110px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: border-color 0.2s ease;
+        }
+        .profile-bg-option.selected {
+            border-color: #007aff;
+        }
+        .profile-bg-option-label {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 5px 4px;
+            font-size: 9px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.85);
+            text-align: center;
+            background: rgba(0,0,0,0.45);
+            letter-spacing: 0.2px;
+        }
+        .profile-bg-check {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #007aff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .profile-bg-lock {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.52);
+        }
+
+        /* Verification badge tooltip */
+        .profile-badge-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+        .profile-badge-tooltip {
+            position: fixed;
+            transform: translateX(-50%) translateY(-100%);
+            margin-top: -10px;
+            background: #2c2c36;
+            border: 1px solid rgba(255,255,255,0.13);
+            border-radius: 10px;
+            padding: 7px 11px;
+            white-space: nowrap;
+            font-size: 12px;
+            font-weight: 500;
+            color: #fff;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            z-index: 1000;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.45);
+        }
+        .profile-badge-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 5px solid transparent;
+            border-top-color: #2c2c36;
+        }
+        .profile-badge-tooltip.visible {
+            opacity: 1;
+        }
     </style>
 </head>
 <body>
@@ -1426,14 +1580,17 @@
 
             <div class="profile-card">
                 <div class="profile-card-top">
-                    <div class="profile-edit-btn">
+                    <div class="profile-edit-btn" onclick="openProfileEdit()">
                         <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M14.3632 5.65156L15.8431 4.17157C16.6242 3.39052 17.8905 3.39052 18.6716 4.17157L20.0858 5.58579C20.8668 6.36683 20.8668 7.63316 20.0858 8.41421L18.6058 9.8942M14.3632 5.65156L4.74749 15.2672C4.41542 15.5993 4.21079 16.0376 4.16947 16.5054L3.92738 19.2459C3.87261 19.8659 4.39148 20.3848 5.0115 20.33L7.75191 20.0879C8.21972 20.0466 8.65806 19.8419 8.99013 19.5099L18.6058 9.8942M14.3632 5.65156L18.6058 9.8942"/></svg>
                     </div>
                     <div class="profile-avatar-ph" id="profileAvatarPh">?</div>
                     <div class="profile-info">
                         <span class="profile-username" id="profileUsername">@username</span>
                         <div style="display:flex;align-items:center;gap:4px;">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11.6065 2.34184C11.8322 2.14578 12.1678 2.14578 12.3935 2.34184L14.3418 4.03445C14.4646 4.14111 14.6254 4.19336 14.7874 4.17924L17.3586 3.9551C17.6564 3.92913 17.9279 4.1264 17.9953 4.41768L18.5766 6.93224C18.6133 7.09069 18.7126 7.22748 18.852 7.31129L21.0639 8.64123C21.3201 8.79529 21.4238 9.11447 21.307 9.3897L20.2994 11.7657C20.2359 11.9155 20.2359 12.0845 20.2994 12.2343L21.307 14.6103C21.4238 14.8855 21.3201 15.2047 21.0639 15.3588L18.852 16.6887C18.7126 16.7725 18.6133 16.9093 18.5766 17.0678L17.9953 19.5823C17.9279 19.8736 17.6564 20.0709 17.3586 20.0449L14.7874 19.8208C14.6254 19.8066 14.4646 19.8589 14.3418 19.9655L12.3935 21.6582C12.1678 21.8542 11.8322 21.8542 11.6065 21.6582L9.65816 19.9655C9.53539 19.8589 9.37458 19.8066 9.21256 19.8208L6.64142 20.0449C6.34359 20.0709 6.07208 19.8736 6.00474 19.5823L5.42338 17.0678C5.38675 16.9093 5.28736 16.7725 5.14798 16.6887L2.93615 15.3588C2.67993 15.2047 2.57622 14.8855 2.69295 14.6103L3.70065 12.2343C3.76414 12.0845 3.76414 11.9155 3.70065 11.7657L2.69295 9.3897C2.57622 9.11447 2.67993 8.79529 2.93615 8.64123L5.14798 7.31129C5.28736 7.22748 5.38675 7.09069 5.42338 6.93224L6.00474 4.41768C6.07208 4.1264 6.34359 3.92913 6.64142 3.9551L9.21256 4.17924C9.37458 4.19336 9.53539 4.14111 9.65816 4.03445L11.6065 2.34184Z" fill="#3b9eff" stroke="#fff" stroke-width="1.5"/><path d="M9 13L11 15L16 10" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <div class="profile-badge-wrap" id="profileBadgeWrap">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11.6065 2.34184C11.8322 2.14578 12.1678 2.14578 12.3935 2.34184L14.3418 4.03445C14.4646 4.14111 14.6254 4.19336 14.7874 4.17924L17.3586 3.9551C17.6564 3.92913 17.9279 4.1264 17.9953 4.41768L18.5766 6.93224C18.6133 7.09069 18.7126 7.22748 18.852 7.31129L21.0639 8.64123C21.3201 8.79529 21.4238 9.11447 21.307 9.3897L20.2994 11.7657C20.2359 11.9155 20.2359 12.0845 20.2994 12.2343L21.307 14.6103C21.4238 14.8855 21.3201 15.2047 21.0639 15.3588L18.852 16.6887C18.7126 16.7725 18.6133 16.9093 18.5766 17.0678L17.9953 19.5823C17.9279 19.8736 17.6564 20.0709 17.3586 20.0449L14.7874 19.8208C14.6254 19.8066 14.4646 19.8589 14.3418 19.9655L12.3935 21.6582C12.1678 21.8542 11.8322 21.8542 11.6065 21.6582L9.65816 19.9655C9.53539 19.8589 9.37458 19.8066 9.21256 19.8208L6.64142 20.0449C6.34359 20.0709 6.07208 19.8736 6.00474 19.5823L5.42338 17.0678C5.38675 16.9093 5.28736 16.7725 5.14798 16.6887L2.93615 15.3588C2.67993 15.2047 2.57622 14.8855 2.69295 14.6103L3.70065 12.2343C3.76414 12.0845 3.76414 11.9155 3.70065 11.7657L2.69295 9.3897C2.57622 9.11447 2.67993 8.79529 2.93615 8.64123L5.14798 7.31129C5.28736 7.22748 5.38675 7.09069 5.42338 6.93224L6.00474 4.41768C6.07208 4.1264 6.34359 3.92913 6.64142 3.9551L9.21256 4.17924C9.37458 4.19336 9.53539 4.14111 9.65816 4.03445L11.6065 2.34184Z" fill="#3b9eff" stroke="#fff" stroke-width="1.5"/><path d="M9 13L11 15L16 10" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                <div class="profile-badge-tooltip">Верифицированный аккаунт TonDrop</div>
+                            </div>
                             <span class="profile-name" id="profileName">Имя</span>
                             <div id="profileGiftTgs" style="width:24px;height:24px;flex-shrink:0;"></div>
                         </div>
@@ -1475,7 +1632,7 @@
                 </div>
             </div>
 
-            <div class="inv-empty" style="flex-shrink:0;">
+            <div class="inv-empty" style="flex-shrink:0;margin-top:10px;">
                 <div class="inv-empty-bg">
                     <div id="profileEmptyTgs" style="width:130px;height:130px;"></div>
                 </div>
@@ -1600,6 +1757,20 @@
                 <div class="settings-toggle-thumb"></div>
             </div>
         </div>
+    </div>
+
+    <div class="profile-bg-backdrop" id="profileBgBackdrop" onclick="closeProfileEdit()"></div>
+    <div class="profile-bg-sheet" id="profileBgSheet">
+        <div class="settings-pill-wrap" onclick="closeProfileEdit()">
+            <div class="settings-pill-bar"></div>
+        </div>
+        <div class="profile-bg-header">
+            <div class="profile-bg-title">Фон карточки</div>
+            <div class="profile-bg-lock-btn" id="profileBgLockBtn" onclick="toggleProfileLock()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+        </div>
+        <div class="profile-bg-grid" id="profileBgGrid"></div>
     </div>
 
     <script>
@@ -2065,6 +2236,167 @@
             if (vibrationOn && window.Telegram?.WebApp?.HapticFeedback) {
                 Telegram.WebApp.HapticFeedback.impactOccurred('light');
             }
+        }
+
+        // Profile Background Editor
+        const profileBgOptions = [
+            { id: 'default',   label: 'По умолч.',     bg: '#242429',   style: '' },
+            { id: 'glass',     label: 'Glassmorphism', bg: 'linear-gradient(135deg,rgba(255,255,255,0.13),rgba(255,255,255,0.04))', style: 'background:rgba(255,255,255,0.07);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,0.12);' },
+            { id: 'purple',    label: 'Фиолетовый',    bg: 'linear-gradient(135deg,#2d1b4e,#1a0f2e)', style: 'background:linear-gradient(135deg,#2d1b4e,#1a0f2e);' },
+            { id: 'blue',      label: 'Синий',          bg: 'linear-gradient(135deg,#0f2044,#0a1a3a)', style: 'background:linear-gradient(135deg,#0f2044,#0a1a3a);' },
+            { id: 'emerald',   label: 'Изумруд',        bg: 'linear-gradient(135deg,#0d2e1a,#0a1e12)', style: 'background:linear-gradient(135deg,#0d2e1a,#0a1e12);' },
+            { id: 'sunset',    label: 'Закат',          bg: 'linear-gradient(135deg,#2e1a0f,#3d1a1a)', style: 'background:linear-gradient(135deg,#2e1a0f,#3d1a1a);' },
+            { id: 'gold',      label: 'Золото',         bg: 'linear-gradient(135deg,#2e280f,#3d3010)', style: 'background:linear-gradient(135deg,#2e280f,#3d3010);', locked: true },
+            { id: 'onyx',      label: 'Оникс',          bg: 'linear-gradient(135deg,#08080c,#101018)', style: 'background:linear-gradient(135deg,#08080c,#101018);', locked: true },
+        ];
+        let currentProfileBg = 'default';
+        // 'normal' = last 2 locked | 'unlocked' = all free | 'locked' = only default
+        let pbgLockState = 'normal';
+
+        function isOptLocked(opt) {
+            if (pbgLockState === 'unlocked') return false;
+            if (pbgLockState === 'locked') return opt.id !== 'default';
+            return !!opt.locked;
+        }
+
+        function toggleProfileLock() {
+            pbgLockState = pbgLockState === 'unlocked' ? 'locked' : 'unlocked';
+            // If current selection is now locked, reset to default
+            const cur = profileBgOptions.find(o => o.id === currentProfileBg);
+            if (cur && isOptLocked(cur)) applyProfileBg('default');
+            const btn = document.getElementById('profileBgLockBtn');
+            if (pbgLockState === 'unlocked') {
+                btn.classList.add('unlocked');
+                btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#007aff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 7.74-4.45"/></svg>';
+            } else {
+                btn.classList.remove('unlocked');
+                btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>';
+            }
+            buildProfileBgGrid();
+        }
+
+        function buildProfileBgGrid() {
+            const grid = document.getElementById('profileBgGrid');
+            grid.innerHTML = '';
+            profileBgOptions.forEach(opt => {
+                const locked = isOptLocked(opt);
+                const el = document.createElement('div');
+                el.className = 'profile-bg-option' + (opt.id === currentProfileBg ? ' selected' : '');
+                el.id = 'pbg-' + opt.id;
+                el.style.background = opt.bg;
+                if (!locked) el.onclick = () => applyProfileBg(opt.id);
+
+                const label = document.createElement('div');
+                label.className = 'profile-bg-option-label';
+                label.textContent = opt.label;
+                el.appendChild(label);
+
+                if (opt.id === currentProfileBg) {
+                    const check = document.createElement('div');
+                    check.className = 'profile-bg-check';
+                    check.innerHTML = '<svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+                    el.appendChild(check);
+                }
+
+                if (locked) {
+                    const lockEl = document.createElement('div');
+                    lockEl.className = 'profile-bg-lock';
+                    lockEl.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>';
+                    el.appendChild(lockEl);
+                }
+
+                grid.appendChild(el);
+            });
+        }
+
+        function applyProfileBg(id) {
+            const opt = profileBgOptions.find(o => o.id === id);
+            if (!opt || isOptLocked(opt)) return;
+            currentProfileBg = id;
+            const cardTop = document.querySelector('.profile-card-top');
+            if (cardTop) {
+                cardTop.removeAttribute('style');
+                if (id !== 'default') cardTop.setAttribute('style', opt.style);
+            }
+            buildProfileBgGrid();
+        }
+
+        const profileBgSheet = document.getElementById('profileBgSheet');
+        const profileBgBackdrop = document.getElementById('profileBgBackdrop');
+
+        function openProfileEdit() {
+            buildProfileBgGrid();
+            profileBgSheet.style.transition = 'transform 0.38s cubic-bezier(0.32, 0.72, 0, 1)';
+            profileBgBackdrop.classList.add('open');
+            profileBgSheet.classList.add('open');
+        }
+
+        function closeProfileEdit() {
+            profileBgSheet.style.transition = 'transform 0.38s cubic-bezier(0.32, 0.72, 0, 1)';
+            profileBgBackdrop.classList.remove('open');
+            profileBgSheet.classList.remove('open');
+        }
+
+        let pbgStartY = 0, pbgDeltaY = 0, pbgDragging = false;
+
+        function pbgSnapBack() {
+            profileBgSheet.style.transition = 'transform 0.3s cubic-bezier(0.32,0.72,0,1)';
+            profileBgSheet.style.transform = 'translateY(0)';
+            profileBgBackdrop.style.transition = 'opacity 0.3s ease';
+            profileBgBackdrop.style.opacity = '0.55';
+            setTimeout(() => { profileBgSheet.style.transition=''; profileBgSheet.style.transform=''; profileBgBackdrop.style.transition=''; profileBgBackdrop.style.opacity=''; }, 300);
+        }
+
+        function pbgSnapClose() {
+            profileBgSheet.style.transition = 'transform 0.3s cubic-bezier(0.32,0.72,0,1)';
+            profileBgSheet.style.transform = 'translateY(100%)';
+            profileBgBackdrop.style.transition = 'opacity 0.3s ease';
+            profileBgBackdrop.style.opacity = '0';
+            setTimeout(() => { profileBgSheet.classList.remove('open'); profileBgBackdrop.classList.remove('open'); profileBgSheet.style.transition=''; profileBgSheet.style.transform=''; profileBgBackdrop.style.transition=''; profileBgBackdrop.style.opacity=''; }, 300);
+        }
+
+        profileBgSheet.addEventListener('pointerdown', e => {
+            if (e.target.closest('.profile-bg-option') ||
+                e.target.closest('.profile-bg-lock-btn') ||
+                e.target.closest('.profile-bg-grid')) return;
+            pbgStartY = e.clientY; pbgDeltaY = 0; pbgDragging = true;
+            profileBgSheet.style.transition = 'none';
+            profileBgBackdrop.style.transition = 'none';
+            profileBgSheet.setPointerCapture(e.pointerId);
+        });
+        profileBgSheet.addEventListener('pointermove', e => {
+            if (!pbgDragging) return;
+            const d = e.clientY - pbgStartY;
+            if (d < 0) return;
+            pbgDeltaY = d;
+            profileBgSheet.style.transform = `translateY(${d}px)`;
+            profileBgBackdrop.style.opacity = Math.max(0, 0.55 * (1 - d / profileBgSheet.offsetHeight));
+        });
+        profileBgSheet.addEventListener('pointerup', () => { if (!pbgDragging) return; pbgDragging = false; pbgDeltaY > profileBgSheet.offsetHeight * 0.45 ? pbgSnapClose() : pbgSnapBack(); });
+        profileBgSheet.addEventListener('pointercancel', () => { if (!pbgDragging) return; pbgDragging = false; pbgSnapBack(); });
+
+        // Verification badge tooltip
+        const profileBadgeWrap = document.getElementById('profileBadgeWrap');
+        if (profileBadgeWrap) {
+            const badgeTip = profileBadgeWrap.querySelector('.profile-badge-tooltip');
+            let tipTimer;
+
+            function showBadgeTip() {
+                const rect = profileBadgeWrap.getBoundingClientRect();
+                badgeTip.style.left = (rect.left + rect.width / 2) + 'px';
+                badgeTip.style.top = (rect.top - 10) + 'px';
+                badgeTip.classList.add('visible');
+                clearTimeout(tipTimer);
+                tipTimer = setTimeout(hideBadgeTip, 2500);
+            }
+
+            function hideBadgeTip() {
+                badgeTip.classList.remove('visible');
+            }
+
+            profileBadgeWrap.addEventListener('click', showBadgeTip);
+            profileBadgeWrap.addEventListener('mouseenter', showBadgeTip);
+            profileBadgeWrap.addEventListener('mouseleave', hideBadgeTip);
         }
     </script>
 
