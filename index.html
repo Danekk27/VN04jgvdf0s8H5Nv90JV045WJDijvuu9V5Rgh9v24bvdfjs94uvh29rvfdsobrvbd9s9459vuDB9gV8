@@ -25,11 +25,13 @@
             font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
             height: 100dvh;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
         .pages-wrapper {
-            position: absolute;
-            inset: 0;
+            position: relative;
+            flex: 1;
             overflow: hidden;
         }
 
@@ -57,10 +59,31 @@
             color: rgba(255,255,255,0.18);
         }
 
+        .top-header {
+            height: 56px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px 0 16px;
+            z-index: 100;
+            background: #18181c;
+        }
+
+        .app-logo {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .app-logo span {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 20px;
+            letter-spacing: 1.5px;
+            color: #fff;
+        }
+
         .balance-badge {
-            position: fixed;
-            top: 16px;
-            right: 16px;
             display: flex;
             align-items: center;
             gap: 7px;
@@ -68,8 +91,8 @@
             border: 1px solid rgba(255,255,255,0.10);
             border-radius: 12px;
             padding: 7px 13px 7px 9px;
-            z-index: 100;
             box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            margin-right: 14px;
         }
 
         .balance-badge span {
@@ -214,7 +237,7 @@
             justify-content: flex-start;
             align-items: stretch;
             overflow-y: auto;
-            padding: 60px 14px 110px;
+            padding: 14px 14px 110px;
             gap: 0;
         }
 
@@ -795,6 +818,121 @@
             background: #0062cc;
         }
 
+        /* ===== Profile Page ===== */
+        .profile-hint {
+            font-size: 11px;
+            font-weight: 500;
+            color: rgba(255,255,255,0.28);
+            text-align: center;
+            letter-spacing: 0.2px;
+        }
+
+        .profile-card {
+            width: 100%;
+            background: #242429;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .profile-card-top {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 14px;
+        }
+
+        .profile-avatar-ph {
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 700;
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .profile-avatar-img {
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .profile-info {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            flex: 1;
+        }
+
+        .profile-username {
+            font-size: 13px;
+            font-weight: 500;
+            color: rgba(255,255,255,0.4);
+        }
+
+        .profile-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .profile-gift-slot {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            background: rgba(255,255,255,0.06);
+            border: 1px dashed rgba(255,255,255,0.15);
+            border-radius: 12px;
+            padding: 10px 12px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .profile-gift-slot span {
+            font-size: 10px;
+            font-weight: 500;
+            color: rgba(255,255,255,0.3);
+        }
+
+        .profile-divider {
+            height: 1px;
+            background: rgba(255,255,255,0.07);
+            margin: 0 14px;
+        }
+
+        .profile-stats-col {
+            display: flex;
+            flex-direction: column;
+            padding: 12px 14px 14px;
+            gap: 10px;
+        }
+
+        .profile-stat-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .profile-stat-label {
+            font-size: 13px;
+            font-weight: 400;
+            color: rgba(255,255,255,0.4);
+        }
+
+        .profile-stat-value {
+            font-size: 13px;
+            font-weight: 600;
+            color: #fff;
+        }
+
         /* ===== Inner Pages ===== */
         #page-profile, #page-rating {
             justify-content: flex-start;
@@ -1127,9 +1265,14 @@
 </head>
 <body>
 
-    <div class="balance-badge">
-        <svg width="18" height="18" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M66.523 11.333H33.477c-4.401 0-6.601 0-8.592.616a13.792 13.792 0 0 0-4.808 2.625c-1.594 1.341-2.784 3.192-5.164 6.894L4.408 37.81c-1.572 2.446-2.358 3.67-2.572 4.956a6.322 6.322 0 0 0 .362 3.37c.482 1.212 1.51 2.24 3.567 4.296l39.033 39.034c1.821 1.82 2.731 2.731 3.781 3.072.924.3 1.918.3 2.842 0 1.05-.34 1.96-1.251 3.78-3.072l39.035-39.034c2.056-2.056 3.084-3.084 3.566-4.296a6.32 6.32 0 0 0 .362-3.37c-.214-1.287-1-2.51-2.572-4.956L85.087 21.47c-2.38-3.703-3.57-5.554-5.164-6.895a13.792 13.792 0 0 0-4.808-2.625c-1.99-.616-4.191-.616-8.592-.616z" fill="#30A1F5"/><path d="M60.268 24.224c.537-1.45 2.59-1.45 3.126 0l3.71 10.027a2.2 2.2 0 0 0 1.3 1.3l10.027 3.71c1.451.537 1.451 2.59 0 3.126l-10.027 3.71a2.2 2.2 0 0 0-1.3 1.3l-3.71 10.027c-.537 1.451-2.59 1.451-3.126 0l-3.71-10.027a2.2 2.2 0 0 0-1.3-1.3l-10.027-3.71c-1.451-.537-1.451-2.589 0-3.126l10.027-3.71a2.2 2.2 0 0 0 1.3-1.3l3.71-10.027z" fill="#fff"/></svg>
-        <span class="balance-amount">199.99</span><span class="gram-ticker">GRAM</span>
+    <div class="top-header">
+        <div class="app-logo" onclick="switchPage('home', document.getElementById('tab-home'))" style="cursor:pointer;">
+            <img src="Tondrop_logopng.png" style="height:32px;object-fit:contain;" onerror="this.style.display='none'"/>
+        </div>
+        <div class="balance-badge">
+            <svg width="18" height="18" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M66.523 11.333H33.477c-4.401 0-6.601 0-8.592.616a13.792 13.792 0 0 0-4.808 2.625c-1.594 1.341-2.784 3.192-5.164 6.894L4.408 37.81c-1.572 2.446-2.358 3.67-2.572 4.956a6.322 6.322 0 0 0 .362 3.37c.482 1.212 1.51 2.24 3.567 4.296l39.033 39.034c1.821 1.82 2.731 2.731 3.781 3.072.924.3 1.918.3 2.842 0 1.05-.34 1.96-1.251 3.78-3.072l39.035-39.034c2.056-2.056 3.084-3.084 3.566-4.296a6.32 6.32 0 0 0 .362-3.37c-.214-1.287-1-2.51-2.572-4.956L85.087 21.47c-2.38-3.703-3.57-5.554-5.164-6.895a13.792 13.792 0 0 0-4.808-2.625c-1.99-.616-4.191-.616-8.592-.616z" fill="#30A1F5"/><path d="M60.268 24.224c.537-1.45 2.59-1.45 3.126 0l3.71 10.027a2.2 2.2 0 0 0 1.3 1.3l10.027 3.71c1.451.537 1.451 2.59 0 3.126l-10.027 3.71a2.2 2.2 0 0 0-1.3 1.3l-3.71 10.027c-.537 1.451-2.59 1.451-3.126 0l-3.71-10.027a2.2 2.2 0 0 0-1.3-1.3l-10.027-3.71c-1.451-.537-1.451-2.589 0-3.126l10.027-3.71a2.2 2.2 0 0 0 1.3-1.3l3.71-10.027z" fill="#fff"/></svg>
+            <span class="balance-amount">199.99</span><span class="gram-ticker">GRAM</span>
+        </div>
     </div>
 
     <div class="pages-wrapper">
@@ -1191,7 +1334,7 @@
                     <!-- gold line -->
                     <div style="position:absolute;right:0;top:0;bottom:0;width:3px;background:rgba(251,191,36,0.5);z-index:1;"></div>
                     <!-- content -->
-                    <div style="position:relative;z-index:2;display:flex;align-items:flex-start;justify-content:space-between;gap:10px;">
+                    <div style="position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:10px;">
                         <div style="display:flex;flex-direction:column;gap:2px;">
                             <span class="best-drop-label">
                                 <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
@@ -1254,24 +1397,50 @@
                 </div>
                 <span>Профиль</span>
             </div>
-            <div class="acc-stat-row">
-                <div class="acc-stat">
-                    <span class="acc-stat-label">Кейсов открыто</span>
-                    <span class="acc-stat-value">248</span>
-                </div>
-                <div class="acc-stat">
-                    <span class="acc-stat-label">Побед</span>
-                    <span class="acc-stat-value">31</span>
+
+            <span class="profile-hint">Другие люди видят ваш аккаунт</span>
+
+            <div class="profile-card">
+                <div class="profile-card-top">
+                    <div class="profile-avatar-ph" id="profileAvatarPh">?</div>
+                    <div class="profile-info">
+                        <span class="profile-username" id="profileUsername">@username</span>
+                        <span class="profile-name" id="profileName">Имя</span>
+                    </div>
+                    </div>
+
+                <div class="profile-divider"></div>
+
+                <div class="profile-stats-col">
+                    <div class="profile-stat-row">
+                        <span class="profile-stat-label">Стоимость инвентаря</span>
+                        <span class="profile-stat-value">—</span>
+                    </div>
+                    <div class="profile-stat-row">
+                        <span class="profile-stat-label">Battle Pass level</span>
+                        <span class="profile-stat-value">1</span>
+                    </div>
+                    <div class="profile-stat-row">
+                        <span class="profile-stat-label">Выведено GRAM</span>
+                        <span class="profile-stat-value">0</span>
+                    </div>
                 </div>
             </div>
-            <div class="acc-stat-row">
-                <div class="acc-stat">
-                    <span class="acc-stat-label">Баланс</span>
-                    <span class="acc-stat-value">199.99</span>
+
+            <div class="ref-promo" id="verifyPromo" style="border-color:rgba(255,255,255,0.08);">
+                <div style="position:absolute;right:10px;bottom:10px;width:110px;height:110px;opacity:0.04;pointer-events:none;z-index:0;">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;"><path d="M11.6065 2.34184C11.8322 2.14578 12.1678 2.14578 12.3935 2.34184L14.3418 4.03445C14.4646 4.14111 14.6254 4.19336 14.7874 4.17924L17.3586 3.9551C17.6564 3.92913 17.9279 4.1264 17.9953 4.41768L18.5766 6.93224C18.6133 7.09069 18.7126 7.22748 18.852 7.31129L21.0639 8.64123C21.3201 8.79529 21.4238 9.11447 21.307 9.3897L20.2994 11.7657C20.2359 11.9155 20.2359 12.0845 20.2994 12.2343L21.307 14.6103C21.4238 14.8855 21.3201 15.2047 21.0639 15.3588L18.852 16.6887C18.7126 16.7725 18.6133 16.9093 18.5766 17.0678L17.9953 19.5823C17.9279 19.8736 17.6564 20.0709 17.3586 20.0449L14.7874 19.8208C14.6254 19.8066 14.4646 19.8589 14.3418 19.9655L12.3935 21.6582C12.1678 21.8542 11.8322 21.8542 11.6065 21.6582L9.65816 19.9655C9.53539 19.8589 9.37458 19.8066 9.21256 19.8208L6.64142 20.0449C6.34359 20.0709 6.07208 19.8736 6.00474 19.5823L5.42338 17.0678C5.38675 16.9093 5.28736 16.7725 5.14798 16.6887L2.93615 15.3588C2.67993 15.2047 2.57622 14.8855 2.69295 14.6103L3.70065 12.2343C3.76414 12.0845 3.76414 11.9155 3.70065 11.7657L2.69295 9.3897C2.57622 9.11447 2.67993 8.79529 2.93615 8.64123L5.14798 7.31129C5.28736 7.22748 5.38675 7.09069 5.42338 6.93224L6.00474 4.41768C6.07208 4.1264 6.34359 3.92913 6.64142 3.9551L9.21256 4.17924C9.37458 4.19336 9.53539 4.14111 9.65816 4.03445L11.6065 2.34184Z" stroke="#fff" stroke-width="1.5"/><path d="M9 13L11 15L16 10" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 </div>
-                <div class="acc-stat">
-                    <span class="acc-stat-label">Уровень</span>
-                    <span class="acc-stat-value">12</span>
+                <div class="ref-promo-close" onclick="document.getElementById('verifyPromo').style.transition='opacity .25s,transform .25s';document.getElementById('verifyPromo').style.opacity='0';document.getElementById('verifyPromo').style.transform='scale(0.96)';setTimeout(()=>document.getElementById('verifyPromo').remove(),250)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                </div>
+                <div class="ref-promo-tag">Верификация</div>
+                <div style="display:flex;flex-direction:column;gap:4px;">
+                    <div class="ref-promo-title">Верифицировать аккаунт</div>
+                    <div class="ref-promo-sub">Подтвердите личность для расширенных возможностей</div>
+                </div>
+                <div class="ref-promo-btn">
+                    <span style="font-size:15px;">Продолжить</span>
                 </div>
             </div>
         </div>
@@ -1768,6 +1937,25 @@
             if (!isDragging) return;
             isDragging = false;
             snapBack();
+        });
+
+        // Fill profile page with Telegram user data
+        window.addEventListener('load', () => {
+            if (!tgUser) return;
+            const uEl = document.getElementById('profileUsername');
+            const nEl = document.getElementById('profileName');
+            const aEl = document.getElementById('profileAvatarPh');
+            if (uEl) uEl.textContent = tgUser.username ? '@' + tgUser.username : '@username';
+            if (nEl) nEl.textContent = [tgUser.first_name, tgUser.last_name].filter(Boolean).join(' ') || 'Имя';
+            if (aEl && tgUser.photo_url) {
+                const img = document.createElement('img');
+                img.src = tgUser.photo_url;
+                img.className = 'profile-avatar-img';
+                img.onerror = () => { aEl.textContent = (tgUser.first_name?.[0] || '?'); };
+                aEl.replaceWith(img);
+            } else if (aEl) {
+                aEl.textContent = tgUser.first_name?.[0] || '?';
+            }
         });
 
         function closeRefPromo() {
