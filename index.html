@@ -6,7 +6,7 @@
     <title>TonDrop</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600&family=Bebas+Neue&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css"/>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
@@ -247,7 +247,7 @@
             display: flex;
             flex-direction: row;
             align-items: center;
-            justify-content: flex-start;
+            justify-content: center;
             padding: 0 20px;
             gap: 20px;
             z-index: 1;
@@ -255,8 +255,37 @@
 
         .pgb-avatar-wrap {
             position: relative;
-            display: inline-flex;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
             flex-shrink: 0;
+        }
+
+        .pgb-rank-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: linear-gradient(135deg, rgba(251,191,36,0.15) 0%, rgba(180,120,10,0.1) 100%);
+            border: 1px solid rgba(251,191,36,0.5);
+            border-radius: 8px;
+            padding: 5px 10px;
+            pointer-events: none;
+        }
+
+        .pgb-rank-btn svg {
+            width: 12px;
+            height: 12px;
+            stroke: none;
+            fill: #fbbf24;
+            flex-shrink: 0;
+        }
+
+        .pgb-rank-btn span {
+            font-size: 12px;
+            font-weight: 700;
+            color: #fbbf24;
+            letter-spacing: 0.3px;
         }
 
         .pgb-buttons {
@@ -293,10 +322,10 @@
 
         .pgb-settings-badge {
             position: absolute;
-            bottom: 4px;
-            right: 4px;
-            width: 42px;
-            height: 42px;
+            bottom: 2px;
+            right: 2px;
+            width: 34px;
+            height: 34px;
             border-radius: 50%;
             background: #242429;
             display: flex;
@@ -306,35 +335,35 @@
         }
 
         .pgb-settings-badge svg {
-            width: 20px;
-            height: 20px;
+            width: 16px;
+            height: 16px;
         }
 
         .pgb-avatar-img {
-            width: 128px;
-            height: 128px;
+            width: 108px;
+            height: 108px;
             border-radius: 50%;
             object-fit: cover;
             display: block;
         }
 
         .pgb-avatar-ph {
-            width: 128px;
-            height: 128px;
+            width: 108px;
+            height: 108px;
             border-radius: 50%;
             background: rgba(255,255,255,0.18);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 44px;
+            font-size: 38px;
             font-weight: 700;
             color: #fff;
         }
         /* ===== Best Drop ===== */
-        .best-drop-row {
+        .best-drop-col {
             display: flex;
-            align-items: stretch;
-            gap: 10px;
+            flex-direction: column;
+            gap: 6px;
             margin-top: 10px;
             width: 100%;
         }
@@ -365,14 +394,37 @@
         }
 
         .best-drop-card {
-            flex: 1;
+            width: 100%;
             background: #242429;
             border: 1px solid rgba(255,255,255,0.08);
             border-radius: 12px;
-            padding: 11px 14px;
+            padding: 11px 14px 12px;
             display: flex;
             flex-direction: column;
-            gap: 3px;
+            gap: 0;
+        }
+
+        .best-drop-timer-row {
+            display: flex;
+            justify-content: center;
+            margin-top: 8px;
+        }
+
+        .best-drop-timer-bar {
+            width: 72px;
+            height: 3px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 100px;
+            overflow: hidden;
+        }
+
+        .best-drop-timer-fill {
+            height: 100%;
+            width: 100%;
+            background: rgba(255,255,255,0.35);
+            border-radius: 100px;
+            transform-origin: left center;
+            will-change: transform;
         }
 
         .best-drop-label {
@@ -398,11 +450,15 @@
             font-size: 15px;
             font-weight: 400;
             color: #fff;
+            margin-top: 8px;
+            margin-bottom: 10px;
         }
+
 
         .best-drop-bottom {
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 8px;
         }
 
@@ -422,6 +478,11 @@
             stroke: rgba(255,255,255,0.5);
             fill: none;
             flex-shrink: 0;
+        }
+
+        .best-drop-lootbox-btn svg .fill-icon {
+            fill: rgba(255,255,255,0.5);
+            stroke: none;
         }
 
         .best-drop-lootbox-btn span {
@@ -453,6 +514,14 @@
             justify-content: center;
             gap: 20px;
             transition: opacity 0.6s ease;
+            overflow: hidden;
+        }
+
+        #welcomeCanvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
         }
 
         .welcome-screen.hide {
@@ -462,15 +531,20 @@
 
         .welcome-emoji {
             animation: welcomePop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-            filter: drop-shadow(0 8px 32px rgba(0,0,0,0.5));
+            filter: drop-shadow(0 8px 40px rgba(0,0,0,0.6));
+            position: relative;
+            z-index: 1;
         }
 
         .welcome-title {
-            font-size: 32px;
-            font-weight: 700;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 52px;
+            font-weight: 400;
             color: #fff;
-            letter-spacing: -0.5px;
+            letter-spacing: 3px;
             animation: welcomeFadeUp 0.5s 0.15s ease both;
+            position: relative;
+            z-index: 1;
         }
 
         .welcome-sub {
@@ -482,6 +556,7 @@
 
         .welcome-bar-wrap {
             position: absolute;
+            z-index: 1;
             bottom: 60px;
             left: 50%;
             transform: translateX(-50%);
@@ -515,6 +590,255 @@
             to   { width: 100%; }
         }
 
+
+        /* ===== Inventory ===== */
+        .inv-section {
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .inv-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .inv-cats {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        .inv-cat-indicator {
+            position: absolute;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.10);
+            border: 1px solid rgba(255,255,255,0.18);
+            pointer-events: none;
+            z-index: 0;
+            transition: left 0.38s cubic-bezier(0.4, 0, 0.2, 1),
+                        width 0.38s cubic-bezier(0.4, 0, 0.2, 1),
+                        top 0.38s cubic-bezier(0.4, 0, 0.2, 1),
+                        height 0.38s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .inv-cat {
+            flex: 1;
+            text-align: center;
+            padding: 8px 0;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            color: rgba(255,255,255,0.4);
+            background: transparent;
+            border: 1px solid transparent;
+            cursor: pointer;
+            position: relative;
+            z-index: 1;
+            transition: color 0.25s ease;
+        }
+
+        .inv-cat.active {
+            color: #fff;
+        }
+
+        .inv-empty {
+            width: 100%;
+            border-radius: 16px;
+            overflow: hidden;
+            background: #242429;
+            border: 1px solid rgba(255,255,255,0.08);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 28px 20px 24px;
+            gap: 12px;
+        }
+
+        .inv-empty-bg {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 70%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .inv-empty-text {
+            font-size: 14px;
+            font-weight: 500;
+            color: #fff;
+            text-align: center;
+        }
+
+        .inv-empty-sub {
+            font-size: 13px;
+            font-weight: 400;
+            color: rgba(255,255,255,0.35);
+            text-align: center;
+            margin-top: -4px;
+        }
+
+        .inv-empty-btn {
+            margin-top: 4px;
+            padding: 10px 72px;
+            border-radius: 12px;
+            background: #007aff;
+            border: 1px solid #007aff;
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .inv-empty-btn:active {
+            background: #0062cc;
+        }
+
+        /* ===== Inner Pages ===== */
+        #page-profile, #page-rating {
+            justify-content: flex-start;
+            align-items: stretch;
+            overflow-y: auto;
+            padding: 16px 14px 0;
+            gap: 8px;
+        }
+
+        .inner-page-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .inner-page-back {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .inner-page-back svg {
+            width: 18px;
+            height: 18px;
+            stroke: #fff;
+        }
+
+        .inner-page-header span {
+            font-size: 18px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .acc-rating-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        /* ===== Account Tabs ===== */
+        .acc-tabs-content {
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .acc-tab-panel {
+            display: none;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .acc-tab-panel.active {
+            display: flex;
+        }
+
+        .acc-stat-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .acc-stat {
+            flex: 1;
+            background: #242429;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .acc-stat-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.3);
+            letter-spacing: 0.7px;
+            text-transform: uppercase;
+        }
+
+        .acc-stat-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .acc-rating-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #242429;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 11px 14px;
+        }
+
+        .acc-rating-row.me {
+            border-color: rgba(48,161,245,0.35);
+            background: rgba(48,161,245,0.07);
+        }
+
+        .acc-rating-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .acc-rating-place {
+            font-size: 13px;
+            font-weight: 700;
+            color: rgba(255,255,255,0.35);
+            min-width: 24px;
+        }
+
+        .acc-rating-place.top { color: #fbbf24; }
+
+        .acc-rating-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #fff;
+        }
+
+        .acc-rating-score {
+            font-size: 13px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.4);
+        }
+
+        .pgb-btn.active {
+            background: rgba(255,255,255,0.18);
+            border-color: rgba(255,255,255,0.3);
+        }
 
         /* ===== Settings Bottom Sheet ===== */
         .settings-backdrop {
@@ -724,6 +1048,7 @@
             <div class="pgb-wrapper" id="pgbWrapper">
                 <div class="pgb-overlay">
                     <div class="pgb-avatar-wrap">
+                        <div style="position:relative;display:inline-flex;">
                         <div class="pgb-avatar-ph" id="pgbAvatarPh">?</div>
                         <div class="pgb-settings-badge" onclick="openSettings()" style="cursor:pointer;pointer-events:all">
                             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -731,12 +1056,19 @@
                                 <path d="M19.6224 10.3954L18.5247 7.7448L20 6L18 4L16.2647 5.48295L13.5578 4.36974L12.9353 2H10.981L10.3491 4.40113L7.70441 5.51596L6 4L4 6L5.45337 7.78885L4.3725 10.4463L2 11V13L4.40111 13.6555L5.51575 16.2997L4 18L6 20L7.79116 18.5403L10.397 19.6123L11 22H13L13.6045 19.6132L16.2551 18.5155C16.6969 18.8313 18 20 18 20L20 18L18.5159 16.2494L19.6139 13.598L21.9999 12.9772L22 11L19.6224 10.3954Z" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
                         </div>
+                        </div>
+                        <div class="pgb-rank-btn">
+                            <svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+                            </svg>
+                            <span>#1000+</span>
+                        </div>
                     </div>
                     <div class="pgb-buttons">
-                        <div class="pgb-btn">
+                        <div class="pgb-btn" onclick="switchPage('profile', document.getElementById('tab-account'))">
                             <span>Профиль</span>
                         </div>
-                        <div class="pgb-btn">
+                        <div class="pgb-btn" onclick="switchPage('rating', document.getElementById('tab-account'))">
                             <span>Рейтинг</span>
                         </div>
                     </div>
@@ -744,27 +1076,98 @@
             </div>
             </div>
 
-            <div class="best-drop-row">
+<div class="best-drop-col">
                 <div class="best-drop-card">
                     <span class="best-drop-label">
                         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
                         Лучший дроп
                     </span>
                     <span class="best-drop-item">text-text</span>
+                </div>
+                <div class="best-drop-card">
                     <div class="best-drop-bottom">
-                        <div class="best-drop-lootbox-btn">
-                            <svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <div class="best-drop-lootbox-btn" id="dropActionBtn">
+                            <svg id="dropBtnIcon" viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M20 12V21.4C20 21.7314 19.7314 22 19.4 22H4.6C4.26863 22 4 21.7314 4 21.4V12"/>
                                 <path d="M21.4 7H2.6C2.26863 7 2 7.26863 2 7.6V11.4C2 11.7314 2.26863 12 2.6 12H21.4C21.7314 12 22 11.7314 22 11.4V7.6C22 7.26863 21.7314 7 21.4 7Z"/>
                                 <path d="M12 22V7"/>
                                 <path d="M12 7H7.5C6.83696 7 6.20107 6.73661 5.73223 6.26777C5.26339 5.79893 5 5.16304 5 4.5C5 3.83696 5.26339 3.20107 5.73223 2.73223C6.20107 2.26339 6.83696 2 7.5 2C11 2 12 7 12 7Z"/>
                                 <path d="M12 7H16.5C17.163 7 17.7989 6.73661 18.2678 6.26777C18.7366 5.79893 19 5.16304 19 4.5C19 3.83696 18.7366 3.20107 18.2678 2.73223C17.7989 2.26339 17.163 2 16.5 2C13 2 12 7 12 7Z"/>
                             </svg>
-                            <span>Лутбоксы</span>
+                            <span id="dropBtnText">Лутбоксы</span>
                         </div>
-                        <span class="best-drop-from">из <span>Example</span></span>
+                        <span class="best-drop-from">Лучший дроп из <span>Example</span></span>
+                    </div>
+                    <div class="best-drop-timer-row">
+                        <div class="best-drop-timer-bar">
+                            <div class="best-drop-timer-fill" id="dropTimerFill"></div>
+                        </div>
                     </div>
                 </div>
+            </div>
+            <div class="inv-section">
+                <div class="inv-title">Инвентарь</div>
+                <div class="inv-cats" id="invCats">
+                    <div class="inv-cat-indicator" id="invIndicator"></div>
+                    <div class="inv-cat active" onclick="switchInvCat(this)">Лутбоксы</div>
+                    <div class="inv-cat" onclick="switchInvCat(this)">Казино</div>
+                    <div class="inv-cat" onclick="switchInvCat(this)">Бонусы</div>
+                    <div class="inv-cat" onclick="switchInvCat(this)">Все</div>
+                </div>
+                <div class="inv-empty">
+                    <div class="inv-empty-bg">
+                        <div id="invTgsContainer" style="width:100px;height:100px;"></div>
+                    </div>
+                    <span class="inv-empty-text">Здесь пока ничего нет</span>
+                    <span class="inv-empty-sub" id="invEmptySub">Играй, чтобы здесь появились подарки</span>
+                    <div class="inv-empty-btn" onclick="switchPage('lootboxes', document.getElementById('tab-lootboxes'))">Исправить</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page-profile">
+            <div class="inner-page-header">
+                <div class="inner-page-back" onclick="switchPage('account', document.getElementById('tab-account'))">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                </div>
+                <span>Профиль</span>
+            </div>
+            <div class="acc-stat-row">
+                <div class="acc-stat">
+                    <span class="acc-stat-label">Кейсов открыто</span>
+                    <span class="acc-stat-value">248</span>
+                </div>
+                <div class="acc-stat">
+                    <span class="acc-stat-label">Побед</span>
+                    <span class="acc-stat-value">31</span>
+                </div>
+            </div>
+            <div class="acc-stat-row">
+                <div class="acc-stat">
+                    <span class="acc-stat-label">Баланс</span>
+                    <span class="acc-stat-value">199.99</span>
+                </div>
+                <div class="acc-stat">
+                    <span class="acc-stat-label">Уровень</span>
+                    <span class="acc-stat-value">12</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page-rating">
+            <div class="inner-page-header">
+                <div class="inner-page-back" onclick="switchPage('account', document.getElementById('tab-account'))">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                </div>
+                <span>Рейтинг</span>
+            </div>
+            <div class="acc-rating-list">
+                <div class="acc-rating-row"><div class="acc-rating-left"><span class="acc-rating-place top">1</span><span class="acc-rating-name">Alexei_pro</span></div><span class="acc-rating-score">12 400</span></div>
+                <div class="acc-rating-row"><div class="acc-rating-left"><span class="acc-rating-place top">2</span><span class="acc-rating-name">Dragon99</span></div><span class="acc-rating-score">9 870</span></div>
+                <div class="acc-rating-row"><div class="acc-rating-left"><span class="acc-rating-place top">3</span><span class="acc-rating-name">NightOwl</span></div><span class="acc-rating-score">7 210</span></div>
+                <div class="acc-rating-row"><div class="acc-rating-left"><span class="acc-rating-place">4</span><span class="acc-rating-name">Viper_X</span></div><span class="acc-rating-score">5 540</span></div>
+                <div class="acc-rating-row"><div class="acc-rating-left"><span class="acc-rating-place">5</span><span class="acc-rating-name">Shadow_K</span></div><span class="acc-rating-score">4 210</span></div>
+                <div class="acc-rating-row me"><div class="acc-rating-left"><span class="acc-rating-place">1000+</span><span class="acc-rating-name">Вы</span></div><span class="acc-rating-score">120</span></div>
             </div>
         </div>
     </div>
@@ -829,9 +1232,9 @@
     </nav>
 
     <div class="welcome-screen" id="welcomeScreen">
+        <canvas id="welcomeCanvas"></canvas>
         <div id="tgsContainer" class="welcome-emoji" style="width:160px;height:160px;"></div>
         <div class="welcome-title">TonDrop</div>
-        <div class="welcome-sub">Открывай кейсы. Побеждай.</div>
         <div class="welcome-bar-wrap">
             <div class="welcome-bar"></div>
         </div>
@@ -945,6 +1348,14 @@
                 indicator.style.transition = '';
             });
 
+            // Init inventory indicator without animation
+            const invIndicator = document.getElementById('invIndicator');
+            invIndicator.style.transition = 'none';
+            moveInvIndicator(document.querySelector('.inv-cat.active'));
+            requestAnimationFrame(() => {
+                invIndicator.style.transition = '';
+            });
+
             // Populate banner avatar
             const pgbPh = document.getElementById('pgbAvatarPh');
             if (tgUser && pgbPh) {
@@ -964,6 +1375,171 @@
                 }
             }
         });
+        // Drop timer cycle
+        (function() {
+            const states = [
+                {
+                    text: 'Лутбоксы',
+                    icon: `<path d="M20 12V21.4C20 21.7314 19.7314 22 19.4 22H4.6C4.26863 22 4 21.7314 4 21.4V12"/>
+                           <path d="M21.4 7H2.6C2.26863 7 2 7.26863 2 7.6V11.4C2 11.7314 2.26863 12 2.6 12H21.4C21.7314 12 22 11.7314 22 11.4V7.6C22 7.26863 21.7314 7 21.4 7Z"/>
+                           <path d="M12 22V7"/>
+                           <path d="M12 7H7.5C6.83696 7 6.20107 6.73661 5.73223 6.26777C5.26339 5.79893 5 5.16304 5 4.5C5 3.83696 5.26339 3.20107 5.73223 2.73223C6.20107 2.26339 6.83696 2 7.5 2C11 2 12 7 12 7Z"/>
+                           <path d="M12 7H16.5C17.163 7 17.7989 6.73661 18.2678 6.26777C18.7366 5.79893 19 5.16304 19 4.5C19 3.83696 18.7366 3.20107 18.2678 2.73223C17.7989 2.26339 17.163 2 16.5 2C13 2 12 7 12 7Z"/>`
+                },
+                {
+                    text: 'Бонусы',
+                    icon: `<circle cx="12" cy="12" r="10"/>
+                           <circle cx="12" cy="12" r="4"/>
+                           <line x1="12" y1="2" x2="12" y2="8"/>
+                           <line x1="12" y1="16" x2="12" y2="22"/>
+                           <line x1="2" y1="12" x2="8" y2="12"/>
+                           <line x1="16" y1="12" x2="22" y2="12"/>
+                           <line x1="4.93" y1="4.93" x2="8.05" y2="8.05"/>
+                           <line x1="15.95" y1="15.95" x2="19.07" y2="19.07"/>
+                           <line x1="19.07" y1="4.93" x2="15.95" y2="8.05"/>
+                           <line x1="8.05" y1="15.95" x2="4.93" y2="19.07"/>
+                           <circle cx="12" cy="4" r="1" class="fill-icon"/>`
+                },
+                {
+                    text: 'Главная',
+                    icon: `<path d="M11 8.5L9.8 9L2.35172 12.3856C2.13752 12.4829 2 12.6965 2 12.9318V13.0682C2 13.3035 2.13752 13.5171 2.35172 13.6144L11.1724 17.6238C11.6982 17.8628 12.3018 17.8628 12.8276 17.6238L21.6483 13.6144C21.8625 13.5171 22 13.3035 22 13.0682V12.9318C22 12.6965 21.8625 12.4829 21.6483 12.3856L14.2 9L13 8.5"/>
+                           <path d="M22 13V17.112C22 17.3482 21.8615 17.5623 21.6462 17.6592L12.8207 21.6307C12.2988 21.8655 11.7012 21.8655 11.1793 21.6307L2.35378 17.6592C2.13847 17.5623 2 17.3482 2 17.112V13"/>
+                           <path d="M12 8C10.3431 8 9 6.65685 9 5C9 3.34315 10.3431 2 12 2C13.6569 2 15 3.34315 15 5C15 6.65685 13.6569 8 12 8Z"/>
+                           <path d="M11 8V13C11 13.5523 11.4477 14 12 14V14C12.5523 14 13 13.5523 13 13V8"/>
+                           <path d="M16 13H17"/>`
+                }
+            ];
+
+            const TOTAL = 15;
+            let stateIdx = 0;
+            const fill = document.getElementById('dropTimerFill');
+            const btnText = document.getElementById('dropBtnText');
+            const btnIcon = document.getElementById('dropBtnIcon');
+
+            function applyState() {
+                const s = states[stateIdx];
+                btnText.textContent = s.text;
+                btnIcon.innerHTML = s.icon;
+            }
+
+            function startCycle() {
+                fill.style.transition = 'none';
+                fill.style.transform = 'scaleX(1)';
+                fill.offsetWidth;
+                fill.style.transition = `transform ${TOTAL}s linear`;
+                fill.style.transform = 'scaleX(0)';
+            }
+
+            fill.addEventListener('transitionend', () => {
+                stateIdx = (stateIdx + 1) % states.length;
+                applyState();
+                startCycle();
+            });
+
+            applyState();
+            startCycle();
+        })();
+
+        // Welcome canvas particles
+        (function() {
+            const canvas = document.getElementById('welcomeCanvas');
+            const ctx = canvas.getContext('2d');
+            let W, H, particles = [], raf;
+
+            function resize() {
+                W = canvas.width = canvas.offsetWidth;
+                H = canvas.height = canvas.offsetHeight;
+            }
+            resize();
+            window.addEventListener('resize', resize);
+
+            for (let i = 0; i < 80; i++) {
+                particles.push({
+                    x: Math.random() * W,
+                    y: Math.random() * H,
+                    r: Math.random() * 1.5 + 0.3,
+                    vx: (Math.random() - 0.5) * 0.12,
+                    vy: -Math.random() * 0.15 - 0.05,
+                    alpha: Math.random() * 0.5 + 0.1,
+                });
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, W, H);
+                particles.forEach(p => {
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(255,255,255,${p.alpha})`;
+                    ctx.fill();
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    if (p.y < -2) { p.y = H + 2; p.x = Math.random() * W; }
+                });
+                raf = requestAnimationFrame(draw);
+            }
+            draw();
+
+            document.getElementById('welcomeScreen').addEventListener('transitionend', () => {
+                cancelAnimationFrame(raf);
+            });
+        })();
+
+        // Inventory TGS
+        (async () => {
+            try {
+                const res = await fetch('5307903378204953223.tgs');
+                const buf = await res.arrayBuffer();
+                const decompressed = pako.inflate(new Uint8Array(buf), { to: 'string' });
+                lottie.loadAnimation({
+                    container: document.getElementById('invTgsContainer'),
+                    animationData: JSON.parse(decompressed),
+                    renderer: 'svg',
+                    loop: true,
+                    autoplay: true,
+                });
+            } catch(e) { console.warn('Inv TGS error:', e); }
+        })();
+
+        const invCatSubs = {
+            'Все': 'Играй, чтобы здесь что-нибудь появилось',
+            'Лутбоксы': 'Играй, чтобы здесь появились подарки',
+            'Казино': 'Играй, чтобы здесь появился gram',
+            'Бонусы': 'Играй, чтобы здесь появились бонусы',
+        };
+
+        const invCatPages = {
+            'Лутбоксы': 'lootboxes',
+            'Казино': 'home',
+            'Бонусы': 'bonuses',
+            'Все': 'home',
+        };
+
+        function moveInvIndicator(el) {
+            const cats = document.getElementById('invCats');
+            const indicator = document.getElementById('invIndicator');
+            const catsRect = cats.getBoundingClientRect();
+            const elRect = el.getBoundingClientRect();
+            indicator.style.left = (elRect.left - catsRect.left) + 'px';
+            indicator.style.top = (elRect.top - catsRect.top) + 'px';
+            indicator.style.width = elRect.width + 'px';
+            indicator.style.height = elRect.height + 'px';
+        }
+
+        function switchInvCat(el) {
+            document.querySelectorAll('.inv-cat').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+            moveInvIndicator(el);
+            const cat = el.textContent.trim();
+            const sub = document.getElementById('invEmptySub');
+            if (sub) sub.textContent = invCatSubs[cat] || '';
+            const btn = document.querySelector('.inv-empty-btn');
+            if (btn) {
+                const page = invCatPages[cat] || 'home';
+                const tabId = page === 'home' ? 'tab-home' : page === 'lootboxes' ? 'tab-lootboxes' : 'tab-bonuses';
+                btn.onclick = () => switchPage(page, document.getElementById(tabId));
+            }
+        }
+
         // TGS loader
         (async () => {
             try {
