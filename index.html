@@ -595,6 +595,7 @@
         .inv-section {
             width: 100%;
             margin-top: 10px;
+            padding-bottom: 32px;
         }
 
         .inv-title {
@@ -1275,6 +1276,8 @@
         if (window.Telegram?.WebApp) {
             Telegram.WebApp.ready();
             Telegram.WebApp.expand();
+            Telegram.WebApp.setBackgroundColor('#18181c');
+            Telegram.WebApp.setHeaderColor('#18181c');
         }
 
         // Load Telegram avatar
