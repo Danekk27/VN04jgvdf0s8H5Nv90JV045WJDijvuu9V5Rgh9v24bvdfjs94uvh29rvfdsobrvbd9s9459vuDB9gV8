@@ -325,6 +325,171 @@
             font-weight: 700;
             color: #fff;
         }
+        /* ===== Settings Bottom Sheet ===== */
+        .settings-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            z-index: 200;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .settings-backdrop.open {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .settings-sheet {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #1e1e23;
+            border-radius: 20px 20px 0 0;
+            z-index: 201;
+            padding: 0 16px 36px;
+            transform: translateY(100%);
+            transition: transform 0.38s cubic-bezier(0.32, 0.72, 0, 1);
+        }
+
+        .settings-sheet.open {
+            transform: translateY(0);
+        }
+
+        .settings-pill-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            padding: 12px 0 18px;
+            cursor: pointer;
+        }
+
+        .settings-pill-bar {
+            width: 36px;
+            height: 4px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 100px;
+        }
+
+        .settings-pill-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: rgba(255,255,255,0.35);
+            letter-spacing: 0.2px;
+        }
+
+        .settings-section {
+            margin-bottom: 8px;
+        }
+
+        .settings-section-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.3);
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .settings-lang-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .settings-lang-btn {
+            flex: 1;
+            text-align: center;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            color: rgba(255,255,255,0.45);
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.08);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .settings-lang-btn.active {
+            background: rgba(48,161,245,0.15);
+            border-color: rgba(48,161,245,0.4);
+            color: #30A1F5;
+            font-weight: 600;
+        }
+
+        .settings-lang-btn:active {
+            opacity: 0.7;
+        }
+
+        .settings-divider {
+            height: 1px;
+            background: rgba(255,255,255,0.07);
+            margin: 8px 0;
+        }
+
+        .settings-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .settings-row:last-child {
+            border-bottom: none;
+        }
+
+        .settings-row-label {
+            font-size: 15px;
+            font-weight: 500;
+            color: #fff;
+        }
+
+        /* Toggle switch */
+        .settings-toggle {
+            width: 48px;
+            height: 28px;
+            border-radius: 100px;
+            background: #3a3a42;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.25s ease;
+            flex-shrink: 0;
+        }
+
+        .settings-toggle.on {
+            background: #30A1F5;
+        }
+
+        .settings-toggle-thumb {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #fff;
+            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+        }
+
+        .settings-toggle.on .settings-toggle-thumb {
+            transform: translateX(20px);
+        }
+
+        .settings-demo-badge {
+            font-size: 12px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.35);
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 5px 11px;
+        }
     </style>
 </head>
 <body>
@@ -345,7 +510,7 @@
                 <div class="pgb-overlay">
                     <div class="pgb-avatar-wrap">
                         <div class="pgb-avatar-ph" id="pgbAvatarPh">?</div>
-                        <div class="pgb-settings-badge">
+                        <div class="pgb-settings-badge" onclick="openSettings()" style="cursor:pointer;pointer-events:all">
                             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                                 <path d="M19.6224 10.3954L18.5247 7.7448L20 6L18 4L16.2647 5.48295L13.5578 4.36974L12.9353 2H10.981L10.3491 4.40113L7.70441 5.51596L6 4L4 6L5.45337 7.78885L4.3725 10.4463L2 11V13L4.40111 13.6555L5.51575 16.2997L4 18L6 20L7.79116 18.5403L10.397 19.6123L11 22H13L13.6045 19.6132L16.2551 18.5155C16.6969 18.8313 18 20 18 20L20 18L18.5159 16.2494L19.6139 13.598L21.9999 12.9772L22 11L19.6224 10.3954Z" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -424,6 +589,37 @@
             <span>Аккаунт</span>
         </div>
     </nav>
+
+    <div class="settings-backdrop" id="settingsBackdrop" onclick="closeSettings()"></div>
+    <div class="settings-sheet" id="settingsSheet">
+        <div class="settings-pill-wrap" onclick="closeSettings()">
+            <div class="settings-pill-bar"></div>
+        </div>
+
+        <div class="settings-section">
+            <span class="settings-section-title">Язык</span>
+            <div class="settings-lang-row">
+                <div class="settings-lang-btn active" id="langRu" onclick="setLang('ru')">🇷🇺 Русский</div>
+                <div class="settings-lang-btn" id="langEn" onclick="setLang('en')">🇬🇧 English</div>
+            </div>
+        </div>
+
+        <div class="settings-divider"></div>
+
+        <div class="settings-row">
+            <span class="settings-row-label">Вибрация</span>
+            <div class="settings-toggle" id="vibrationToggle" onclick="toggleVibration()">
+                <div class="settings-toggle-thumb"></div>
+            </div>
+        </div>
+
+        <div class="settings-row">
+            <span class="settings-row-label">Демо</span>
+            <div class="settings-toggle" id="demoToggle" onclick="toggleDemo()">
+                <div class="settings-toggle-thumb"></div>
+            </div>
+        </div>
+    </div>
 
     <script>
         if (window.Telegram?.WebApp) {
@@ -521,6 +717,91 @@
                 }
             }
         });
+        // Settings sheet
+        const sheet = document.getElementById('settingsSheet');
+        const backdrop = document.getElementById('settingsBackdrop');
+
+        function openSettings() {
+            sheet.style.transition = 'transform 0.38s cubic-bezier(0.32, 0.72, 0, 1)';
+            backdrop.classList.add('open');
+            sheet.classList.add('open');
+        }
+
+        function closeSettings() {
+            sheet.style.transition = 'transform 0.38s cubic-bezier(0.32, 0.72, 0, 1)';
+            backdrop.classList.remove('open');
+            sheet.classList.remove('open');
+        }
+
+        // Drag to dismiss
+        let dragStartY = 0;
+        let dragCurrentY = 0;
+        let isDragging = false;
+
+        sheet.addEventListener('touchstart', (e) => {
+            dragStartY = e.touches[0].clientY;
+            dragCurrentY = 0;
+            isDragging = true;
+            sheet.style.transition = 'none';
+        }, { passive: true });
+
+        sheet.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            const delta = e.touches[0].clientY - dragStartY;
+            if (delta < 0) return;
+            dragCurrentY = delta;
+            sheet.style.transform = `translateY(${delta}px)`;
+            const opacity = Math.max(0, 0.55 - (delta / sheet.offsetHeight) * 0.55);
+            backdrop.style.opacity = opacity;
+        }, { passive: true });
+
+        sheet.addEventListener('touchend', () => {
+            if (!isDragging) return;
+            isDragging = false;
+            if (dragCurrentY > sheet.offsetHeight * 0.45) {
+                sheet.style.transition = 'transform 0.3s cubic-bezier(0.32, 0.72, 0, 1)';
+                sheet.style.transform = 'translateY(100%)';
+                backdrop.style.transition = 'opacity 0.3s ease';
+                backdrop.style.opacity = '0';
+                setTimeout(() => {
+                    sheet.classList.remove('open');
+                    backdrop.classList.remove('open');
+                    sheet.style.transform = '';
+                    backdrop.style.opacity = '';
+                    backdrop.style.transition = '';
+                }, 300);
+            } else {
+                sheet.style.transition = 'transform 0.3s cubic-bezier(0.32, 0.72, 0, 1)';
+                sheet.style.transform = 'translateY(0)';
+                backdrop.style.transition = 'opacity 0.3s ease';
+                backdrop.style.opacity = '0.55';
+                setTimeout(() => {
+                    sheet.style.transform = '';
+                    backdrop.style.opacity = '';
+                    backdrop.style.transition = '';
+                }, 300);
+            }
+        });
+
+        function setLang(lang) {
+            document.getElementById('langRu').classList.toggle('active', lang === 'ru');
+            document.getElementById('langEn').classList.toggle('active', lang === 'en');
+        }
+
+        let demoOn = false;
+        function toggleDemo() {
+            demoOn = !demoOn;
+            document.getElementById('demoToggle').classList.toggle('on', demoOn);
+        }
+
+        let vibrationOn = false;
+        function toggleVibration() {
+            vibrationOn = !vibrationOn;
+            document.getElementById('vibrationToggle').classList.toggle('on', vibrationOn);
+            if (vibrationOn && window.Telegram?.WebApp?.HapticFeedback) {
+                Telegram.WebApp.HapticFeedback.impactOccurred('light');
+            }
+        }
     </script>
 
 </body>
