@@ -6,6 +6,7 @@
     <title>TonDrop</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css"/>
     <style>
         * {
             margin: 0;
@@ -406,7 +407,8 @@
             overflow: hidden;
             display: flex;
             align-items: center;
-            padding: 12px 12px 12px 44px;
+            justify-content: center;
+            padding: 12px;
             border-radius: 12px;
             font-size: 14px;
             font-weight: 500;
@@ -430,17 +432,22 @@
 
         .lang-flag {
             position: absolute;
-            left: 0;
+            left: -16px;
             top: 0;
             bottom: 0;
-            width: 52px;
+            width: 76px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 22px;
             pointer-events: none;
-            -webkit-mask-image: linear-gradient(to right, black 45%, transparent 100%);
-            mask-image: linear-gradient(to right, black 45%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to right, black 55%, transparent 90%);
+            mask-image: linear-gradient(to right, black 55%, transparent 90%);
+        }
+
+        .lang-flag .fi {
+            width: 80px;
+            height: 43px;
+            border-radius: 6px;
         }
 
         .settings-divider {
@@ -617,8 +624,8 @@
         <div class="settings-section">
             <span class="settings-section-title">Язык</span>
             <div class="settings-lang-row">
-                <div class="settings-lang-btn active" id="langRu" onclick="setLang('ru')"><span class="lang-flag">🇷🇺</span>Русский</div>
-                <div class="settings-lang-btn" id="langEn" onclick="setLang('en')"><span class="lang-flag">🇺🇸</span>English</div>
+                <div class="settings-lang-btn active" id="langRu" onclick="setLang('ru')"><span class="lang-flag"><span class="fi fi-ru"></span></span>Русский</div>
+                <div class="settings-lang-btn" id="langEn" onclick="setLang('en')"><span class="lang-flag"><span class="fi fi-us"></span></span>English</div>
             </div>
         </div>
 
