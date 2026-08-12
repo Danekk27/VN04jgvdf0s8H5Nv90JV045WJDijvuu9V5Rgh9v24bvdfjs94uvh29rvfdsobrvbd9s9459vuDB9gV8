@@ -60,12 +60,14 @@
         }
 
         .top-header {
-            height: 56px;
+            height: calc(56px + env(safe-area-inset-top, 0px));
+            padding-top: env(safe-area-inset-top, 0px);
             flex-shrink: 0;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 16px 0 16px;
+            padding-left: 16px;
+            padding-right: 16px;
             z-index: 100;
             background: #18181c;
         }
@@ -125,7 +127,7 @@
         /* Nav island */
         .nav-island {
             position: fixed;
-            bottom: 22px;
+            bottom: calc(22px + env(safe-area-inset-bottom, 0px));
             left: 50%;
             transform: translateX(-50%);
             background: #242429;
@@ -236,10 +238,14 @@
         #page-account {
             justify-content: flex-start;
             align-items: stretch;
-            overflow-y: auto;
-            padding: 14px 14px 110px;
+            overflow-y: scroll;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            padding: 14px 14px calc(110px + env(safe-area-inset-bottom, 0px));
             gap: 0;
         }
+
+        #page-account::-webkit-scrollbar { display: none; }
 
         .pgb-scene {
             position: relative;
@@ -825,6 +831,8 @@
             color: rgba(255,255,255,0.28);
             text-align: center;
             letter-spacing: 0.2px;
+            display: block;
+            flex-shrink: 0;
         }
 
         .profile-card {
@@ -842,7 +850,24 @@
             gap: 12px;
             padding: 16px 14px;
             position: relative;
-            transition: background 0.35s ease, backdrop-filter 0.35s ease;
+            isolation: isolate;
+            transition: background 0.35s ease, backdrop-filter 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+        }
+
+        .theme-svg-overlay {
+            position: absolute;
+            right: 32px;
+            bottom: 0px;
+            width: 92px;
+            height: 92px;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.18;
+        }
+
+        .theme-svg-overlay svg {
+            width: 100%;
+            height: 100%;
         }
 
         .profile-edit-btn {
@@ -962,16 +987,22 @@
         #page-profile, #page-rating {
             justify-content: flex-start;
             align-items: stretch;
-            overflow-y: auto;
-            padding: 16px 14px 110px;
+            overflow-y: scroll;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            padding: 16px 14px calc(110px + env(safe-area-inset-bottom, 0px));
             gap: 8px;
         }
+
+        #page-profile::-webkit-scrollbar,
+        #page-rating::-webkit-scrollbar { display: none; }
 
         .inner-page-header {
             display: flex;
             align-items: center;
             gap: 10px;
             margin-bottom: 8px;
+            flex-shrink: 0;
         }
 
         .inner-page-back {
@@ -1002,6 +1033,7 @@
             display: flex;
             flex-direction: column;
             gap: 6px;
+            flex-shrink: 0;
         }
 
         /* ===== Account Tabs ===== */
@@ -1348,10 +1380,11 @@
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 10px;
-            max-height: 362px;
+            max-height: 480px;
             overflow-y: auto;
             overflow-x: hidden;
             -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
             padding-right: 2px;
         }
         .profile-bg-grid::-webkit-scrollbar { display: none; }
@@ -1399,6 +1432,22 @@
             align-items: center;
             justify-content: center;
             background: rgba(0,0,0,0.52);
+        }
+
+        .pbg-svg-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 72px;
+            height: 72px;
+            pointer-events: none;
+            opacity: 0.22;
+        }
+
+        .pbg-svg-overlay svg {
+            width: 100%;
+            height: 100%;
         }
 
         /* Verification badge tooltip */
@@ -1777,6 +1826,12 @@
         if (window.Telegram?.WebApp) {
             Telegram.WebApp.ready();
             Telegram.WebApp.expand();
+            if (Telegram.WebApp.requestFullscreen && !Telegram.WebApp.isFullscreen) {
+                try { Telegram.WebApp.requestFullscreen(); } catch(e) {}
+            }
+            if (Telegram.WebApp.disableVerticalSwipes) {
+                try { Telegram.WebApp.disableVerticalSwipes(); } catch(e) {}
+            }
             Telegram.WebApp.setBackgroundColor('#18181c');
             Telegram.WebApp.setHeaderColor('#18181c');
         }
@@ -2078,29 +2133,34 @@
 
         // TGS loader
         (async () => {
+            const container = document.getElementById('tgsContainer');
             try {
                 const res = await fetch('5255975823436973213.tgs');
+                if (!res.ok) throw new Error('fetch failed');
                 const buf = await res.arrayBuffer();
                 const decompressed = pako.inflate(new Uint8Array(buf), { to: 'string' });
                 const animData = JSON.parse(decompressed);
                 lottie.loadAnimation({
-                    container: document.getElementById('tgsContainer'),
+                    container,
                     animationData: animData,
                     renderer: 'svg',
                     loop: true,
                     autoplay: true,
                 });
             } catch(e) {
+                if (container) container.textContent = '🐻';
                 console.warn('TGS load error:', e);
             }
         })();
 
         // Welcome screen
-        setTimeout(() => {
+        function hideWelcomeScreen() {
             const ws = document.getElementById('welcomeScreen');
+            if (!ws) return;
             ws.classList.add('hide');
-            setTimeout(() => ws.remove(), 600);
-        }, 2600);
+            setTimeout(() => { if (ws.parentNode) ws.remove(); }, 650);
+        }
+        setTimeout(hideWelcomeScreen, 2600);
 
         // Settings sheet
         const sheet = document.getElementById('settingsSheet');
@@ -2240,14 +2300,79 @@
 
         // Profile Background Editor
         const profileBgOptions = [
-            { id: 'default',   label: 'По умолч.',     bg: '#242429',   style: '' },
-            { id: 'glass',     label: 'Glassmorphism', bg: 'linear-gradient(135deg,rgba(255,255,255,0.13),rgba(255,255,255,0.04))', style: 'background:rgba(255,255,255,0.07);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,0.12);' },
-            { id: 'purple',    label: 'Фиолетовый',    bg: 'linear-gradient(135deg,#2d1b4e,#1a0f2e)', style: 'background:linear-gradient(135deg,#2d1b4e,#1a0f2e);' },
-            { id: 'blue',      label: 'Синий',          bg: 'linear-gradient(135deg,#0f2044,#0a1a3a)', style: 'background:linear-gradient(135deg,#0f2044,#0a1a3a);' },
-            { id: 'emerald',   label: 'Изумруд',        bg: 'linear-gradient(135deg,#0d2e1a,#0a1e12)', style: 'background:linear-gradient(135deg,#0d2e1a,#0a1e12);' },
-            { id: 'sunset',    label: 'Закат',          bg: 'linear-gradient(135deg,#2e1a0f,#3d1a1a)', style: 'background:linear-gradient(135deg,#2e1a0f,#3d1a1a);' },
-            { id: 'gold',      label: 'Золото',         bg: 'linear-gradient(135deg,#2e280f,#3d3010)', style: 'background:linear-gradient(135deg,#2e280f,#3d3010);', locked: true },
-            { id: 'onyx',      label: 'Оникс',          bg: 'linear-gradient(135deg,#08080c,#101018)', style: 'background:linear-gradient(135deg,#08080c,#101018);', locked: true },
+            {
+                id: 'default',
+                label: 'По умолч.',
+                bg: '#242429',
+                style: ''
+            },
+            {
+                id: 'tondrop',
+                label: 'TonDrop',
+                bg: 'linear-gradient(90deg,#3b89fc 0%,#035afc 100%)',
+                style: 'background:linear-gradient(90deg,#3b89fc 0%,#035afc 100%);',
+                svgOverlay: `<img src="Tondrop_logopng.png" style="width:100%;height:100%;object-fit:contain;mix-blend-mode:screen;" />`,
+                overlayStyle: 'right:20px;bottom:-10px;width:108px;height:108px;opacity:0.88;'
+            },
+            {
+                id: 'glass',
+                label: 'Glass',
+                bg: 'linear-gradient(145deg, rgba(255,255,255,0.14) 0%, rgba(200,225,255,0.06) 50%, rgba(255,255,255,0.10) 100%)',
+                style: 'background:linear-gradient(145deg,rgba(255,255,255,0.10) 0%,rgba(255,255,255,0.03) 45%,rgba(255,255,255,0.07) 100%);backdrop-filter:blur(36px) saturate(200%) brightness(1.14);-webkit-backdrop-filter:blur(36px) saturate(200%) brightness(1.14);box-shadow:inset 0 1.5px 0 rgba(255,255,255,0.32),inset 0 -1px 0 rgba(0,0,0,0.1),inset 1px 0 0 rgba(255,255,255,0.12),inset -1px 0 0 rgba(255,255,255,0.06);border-bottom:1px solid rgba(255,255,255,0.08);'
+            },
+            {
+                id: 'black',
+                label: 'Чёрный',
+                bg: 'linear-gradient(135deg,#08080c,#101018)',
+                style: 'background:linear-gradient(135deg,#08080c,#101018);box-shadow:inset 0 1px 0 rgba(255,255,255,0.05);'
+            },
+            {
+                id: 'purple',
+                label: 'Фиолетовый',
+                bg: 'linear-gradient(135deg,#1a0840,#2a1058)',
+                style: 'background:linear-gradient(135deg,#1a0840 0%,#2a1058 50%,#1a0840 100%);border-bottom:1px solid rgba(150,80,255,0.35);box-shadow:inset 0 0 40px rgba(120,40,220,0.22);'
+            },
+            {
+                id: 'battlepass',
+                label: 'Battle Pass+',
+                bg: 'linear-gradient(135deg,#12002e,#3a0068,#12002e)',
+                style: 'background:linear-gradient(125deg,#0e0025 0%,#26004a 28%,#420080 50%,#26004a 72%,#0e0025 100%);border-bottom:1.5px solid rgba(255,200,0,0.8);border-top:1.5px solid rgba(255,200,0,0.35);box-shadow:inset 0 0 80px rgba(130,0,255,0.28),inset 0 1.5px 0 rgba(255,225,60,0.7),inset 0 -1px 0 rgba(180,0,255,0.3);',
+                locked: true
+            },
+            {
+                id: 'gram',
+                label: 'GRAM',
+                bg: 'radial-gradient(ellipse at 70% 20%,rgba(48,161,245,0.75) 0%,transparent 55%),linear-gradient(135deg,#183660,#2a5490)',
+                style: 'background:radial-gradient(ellipse at 75% 15%,rgba(48,161,245,0.55) 0%,transparent 50%),radial-gradient(ellipse at 20% 85%,rgba(48,161,245,0.28) 0%,transparent 50%),linear-gradient(135deg,#163258 0%,#244e82 50%,#163258 100%);border-bottom:1px solid rgba(48,161,245,0.75);box-shadow:inset 0 0 60px rgba(48,161,245,0.35),inset 0 1.5px 0 rgba(48,161,245,0.55);',
+                svgOverlay: `<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M66.523 11.333H33.477c-4.401 0-6.601 0-8.592.616a13.792 13.792 0 0 0-4.808 2.625c-1.594 1.341-2.784 3.192-5.164 6.894L4.408 37.81c-1.572 2.446-2.358 3.67-2.572 4.956a6.322 6.322 0 0 0 .362 3.37c.482 1.212 1.51 2.24 3.567 4.296l39.033 39.034c1.821 1.82 2.731 2.731 3.781 3.072.924.3 1.918.3 2.842 0 1.05-.34 1.96-1.251 3.78-3.072l39.035-39.034c2.056-2.056 3.084-3.084 3.566-4.296a6.32 6.32 0 0 0 .362-3.37c-.214-1.287-1-2.51-2.572-4.956L85.087 21.47c-2.38-3.703-3.57-5.554-5.164-6.895a13.792 13.792 0 0 0-4.808-2.625c-1.99-.616-4.191-.616-8.592-.616z" fill="#30A1F5"/><path d="M60.268 24.224c.537-1.45 2.59-1.45 3.126 0l3.71 10.027a2.2 2.2 0 0 0 1.3 1.3l10.027 3.71c1.451.537 1.451 2.59 0 3.126l-10.027 3.71a2.2 2.2 0 0 0-1.3 1.3l-3.71 10.027c-.537 1.451-2.59 1.451-3.126 0l-3.71-10.027a2.2 2.2 0 0 0-1.3-1.3l-10.027-3.71c-1.451-.537-1.451-2.589 0-3.126l10.027-3.71a2.2 2.2 0 0 0 1.3-1.3l3.71-10.027z" fill="#fff"/></svg>`,
+                locked: true
+            },
+            {
+                id: 'orange',
+                label: 'Оранжевый',
+                bg: 'linear-gradient(135deg,#2e1a0f,#3d1a1a)',
+                style: 'background:linear-gradient(135deg,#2e1a0f,#3d1a1a);'
+            },
+            {
+                id: 'emerald',
+                label: 'Изумруд',
+                bg: 'linear-gradient(135deg,#00130a,#002010)',
+                style: 'background:linear-gradient(135deg,#00130a 0%,#002010 50%,#00130a 100%);border-bottom:1px solid rgba(16,185,129,0.35);box-shadow:inset 0 0 40px rgba(16,185,129,0.13);'
+            },
+            {
+                id: 'telegram',
+                label: 'Telegram',
+                bg: '#2AABEE',
+                style: 'background:#2AABEE;border-bottom:1px solid rgba(255,255,255,0.2);box-shadow:inset 0 1.5px 0 rgba(255,255,255,0.15);',
+                svgOverlay: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 5L2 12.5L9 13.5M21 5L18.5 20L9 13.5M21 5L9 13.5M9 13.5V19L12.2488 15.7229" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+                overlayStyle: 'right:28px;bottom:0px;width:92px;height:92px;opacity:0.55;'
+            },
+            {
+                id: 'aurora',
+                label: 'Аврора',
+                bg: 'radial-gradient(ellipse at 15% 10%,rgba(0,255,160,0.52) 0%,transparent 46%),radial-gradient(ellipse at 85% 90%,rgba(130,60,255,0.48) 0%,transparent 46%),radial-gradient(ellipse at 55% 50%,rgba(0,160,255,0.16) 0%,transparent 55%),#060d18',
+                style: 'background:radial-gradient(ellipse at 10% 0%,rgba(0,255,160,0.3) 0%,transparent 44%),radial-gradient(ellipse at 90% 100%,rgba(130,60,255,0.3) 0%,transparent 44%),radial-gradient(ellipse at 50% 50%,rgba(0,140,255,0.1) 0%,transparent 58%),linear-gradient(155deg,#060c18 0%,#0a1224 100%);border-bottom:1px solid rgba(0,230,150,0.34);box-shadow:inset 0 0 60px rgba(0,210,140,0.1),inset 0 1.5px 0 rgba(0,240,160,0.22);'
+            },
         ];
         let currentProfileBg = 'default';
         // 'normal' = last 2 locked | 'unlocked' = all free | 'locked' = only default
@@ -2286,6 +2411,13 @@
                 el.style.background = opt.bg;
                 if (!locked) el.onclick = () => applyProfileBg(opt.id);
 
+                if (opt.svgOverlay) {
+                    const previewOverlay = document.createElement('div');
+                    previewOverlay.className = 'pbg-svg-overlay';
+                    previewOverlay.innerHTML = opt.svgOverlay;
+                    el.appendChild(previewOverlay);
+                }
+
                 const label = document.createElement('div');
                 label.className = 'profile-bg-option-label';
                 label.textContent = opt.label;
@@ -2315,8 +2447,17 @@
             currentProfileBg = id;
             const cardTop = document.querySelector('.profile-card-top');
             if (cardTop) {
+                const existing = cardTop.querySelector('.theme-svg-overlay');
+                if (existing) existing.remove();
                 cardTop.removeAttribute('style');
                 if (id !== 'default') cardTop.setAttribute('style', opt.style);
+                if (opt.svgOverlay) {
+                    const overlay = document.createElement('div');
+                    overlay.className = 'theme-svg-overlay';
+                    if (opt.overlayStyle) overlay.style.cssText = opt.overlayStyle;
+                    overlay.innerHTML = opt.svgOverlay;
+                    cardTop.appendChild(overlay);
+                }
             }
             buildProfileBgGrid();
         }
@@ -2383,7 +2524,9 @@
 
             function showBadgeTip() {
                 const rect = profileBadgeWrap.getBoundingClientRect();
-                badgeTip.style.left = (rect.left + rect.width / 2) + 'px';
+                const halfW = (badgeTip.offsetWidth || 180) / 2;
+                const left = Math.max(halfW + 8, Math.min(rect.left + rect.width / 2, window.innerWidth - halfW - 8));
+                badgeTip.style.left = left + 'px';
                 badgeTip.style.top = (rect.top - 10) + 'px';
                 badgeTip.classList.add('visible');
                 clearTimeout(tipTimer);
